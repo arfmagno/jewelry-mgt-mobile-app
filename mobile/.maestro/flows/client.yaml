@@ -1,0 +1,31 @@
+appId: dev.atelier.jewelry
+name: client
+---
+- launchApp:
+    clearState: true
+- tapOn: "Clients"
+- tapOn:
+    id: "add-client"
+- tapOn:
+    id: "client-first-name"
+- inputText: "Ana"
+- tapOn:
+    id: "client-last-name"
+- inputText: "Santos"
+- tapOn:
+    id: "client-phone"
+- inputText: "12345"
+- hideKeyboard
+- tapOn:
+    id: "save-client"
+# Invalid numbers are rejected with an inline error.
+- assertVisible: "Enter a valid PH mobile or landline number"
+- tapOn:
+    id: "client-phone"
+- eraseText: 10
+- inputText: "09171234567"
+- hideKeyboard
+- tapOn:
+    id: "save-client"
+- assertVisible: "Ana Santos"
+- assertVisible: "0917 123 4567"

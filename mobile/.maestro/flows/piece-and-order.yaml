@@ -1,0 +1,62 @@
+appId: dev.atelier.jewelry
+name: piece-and-order
+---
+- launchApp
+# Create an on-hand piece (default: one ring part, 18K yellow gold).
+- tapOn: "Pieces"
+- tapOn:
+    id: "add-piece"
+- tapOn:
+    id: "piece-description"
+- inputText: "Solitaire engagement ring"
+- hideKeyboard
+- tapOn:
+    id: "save-piece"
+- assertVisible: "Solitaire engagement ring"
+
+# Sell it in a job order to the client from the previous flow.
+- tapOn: "Orders"
+- tapOn:
+    id: "add-order"
+- tapOn:
+    id: "order-client"
+- tapOn: "Ana Santos"
+- tapOn:
+    id: "add-existing-piece"
+- tapOn: "Solitaire engagement ring"
+- tapOn:
+    id: "item-price"
+- eraseText: 12
+- inputText: "25000"
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "save-order"
+- tapOn:
+    id: "save-order"
+
+# Order detail: record a down payment, then the balance.
+- assertVisible:
+    id: "order-detail"
+- assertVisible: "₱25,000.00"
+- tapOn:
+    id: "add-payment"
+- tapOn:
+    id: "payment-amount"
+- eraseText: 12
+- inputText: "10000"
+- hideKeyboard
+- tapOn:
+    id: "save-payment"
+- assertVisible: "₱15,000.00"
+- tapOn:
+    id: "add-payment"
+# The amount defaults to the remaining balance.
+- tapOn:
+    id: "save-payment"
+- assertVisible: "Fully paid"
+
+# The piece now shows as part of an order.
+- back
+- tapOn: "Pieces"
+- assertVisible: "In an order"

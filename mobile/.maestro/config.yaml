@@ -1,0 +1,10 @@
+# End-to-end flows. They run the app in offline-only mode (no API configured),
+# so they need no backend: every screen reads and writes the on-device database.
+flows:
+  - "flows/*.yaml"
+executionOrder:
+  continueOnFailure: false
+  flowsOrder:
+    - client
+    - piece-and-order
+    - trash

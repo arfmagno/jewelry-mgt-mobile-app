@@ -1,0 +1,23 @@
+appId: dev.atelier.jewelry
+name: trash
+---
+- launchApp
+- tapOn: "Clients"
+- tapOn: "Ana Santos"
+- scrollUntilVisible:
+    element: "Delete client"
+- tapOn: "Delete client"
+# Android may render dialog buttons in capitals.
+- tapOn: "(?i)delete"
+- assertNotVisible: "Ana Santos"
+
+# Deleted records wait in Trash and can be restored.
+- tapOn: "More"
+- tapOn:
+    id: "open-trash"
+- assertVisible: "Ana Santos"
+- tapOn: "Restore Ana Santos"
+- assertVisible: "Trash is empty"
+- back
+- tapOn: "Clients"
+- assertVisible: "Ana Santos"
