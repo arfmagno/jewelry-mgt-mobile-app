@@ -1,0 +1,27 @@
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+
+# CDK
+cdk.out/
+cdk.context.json
+
+# Expo / React Native
+.expo/
+web-build/
+expo-env.d.ts
+android/
+ios/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# OS / env
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
