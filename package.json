@@ -10,5 +10,5 @@
     "deploy": "npm run deploy -w infra",
     "mobile": "npm run start -w mobile"
   },
-  "engines": { "node": ">=22.13" }
+  "engines": { "node": ">=24" }
 }

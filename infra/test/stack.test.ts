@@ -62,10 +62,10 @@ describe("JewelryStack", () => {
     });
   });
 
-  it("exposes the API through a Function URL on arm64 Node 22", () => {
+  it("exposes the API through a Function URL on arm64 Node 24", () => {
     template.hasResourceProperties("AWS::Lambda::Url", { AuthType: "NONE" });
     template.hasResourceProperties("AWS::Lambda::Function", {
-      Runtime: "nodejs22.x",
+      Runtime: "nodejs24.x",
       Architectures: ["arm64"],
       Environment: {
         Variables: Match.objectLike({ CLOUDFLARE_ACCOUNT_ID: "cf-account", R2_BUCKET: "jewelry-images" }),

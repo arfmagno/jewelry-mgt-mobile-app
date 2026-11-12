@@ -83,7 +83,7 @@ export class JewelryStack extends Stack {
     const api = new nodejs.NodejsFunction(this, "Api", {
       entry: path.join(__dirname, "../../backend/src/handler.ts"),
       handler: "handler",
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: lambda.Runtime.NODEJS_24_X,
       architecture: lambda.Architecture.ARM_64,
       memorySize: 512,
       timeout: Duration.seconds(60), // AI image generation can take several seconds
@@ -91,7 +91,7 @@ export class JewelryStack extends Stack {
       bundling: {
         minify: true,
         sourceMap: true,
-        target: "node22",
+        target: "node24",
         externalModules: ["@aws-sdk/*"], // provided by the Lambda runtime
       },
       environment: {
