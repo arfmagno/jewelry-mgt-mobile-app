@@ -47,6 +47,11 @@ export function AppProvider({ store, children }: { store: Store; children: React
   );
   const engine = useMemo(() => (api ? new SyncEngine(store, api) : null), [api, store]);
 
+  // Empty expired Trash on launch (sync also does this, but the app may run offline-only).
+  useEffect(() => {
+    purgeExpired(store).catch(() => undefined);
+  }, [store]);
+
   useEffect(() => {
     if (!isCloudEnabled()) return;
     auth.isSignedIn().then((yes) => setAuthState(yes ? "signed_in" : "signed_out"));
