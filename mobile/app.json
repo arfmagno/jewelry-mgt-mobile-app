@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "Atelier",
+    "slug": "jewelry-atelier",
+    "scheme": "atelier",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#0E0D0B",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.atelier.jewelry"
+    },
+    "android": {
+      "package": "dev.atelier.jewelry",
+      "adaptiveIcon": {
+        "backgroundColor": "#0E0D0B",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-image",
+      "expo-secure-store",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#F7F3EA",
+          "dark": { "image": "./assets/splash-icon.png", "backgroundColor": "#0E0D0B" }
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Atelier to attach photos of your jewelry pieces.",
+          "cameraPermission": "Allow Atelier to take photos of your jewelry pieces."
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
