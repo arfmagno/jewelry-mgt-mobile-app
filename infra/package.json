@@ -10,7 +10,7 @@
     "diff": "cdk diff"
   },
   "devDependencies": {
-    "@types/node": "^20.19.43",
+    "@types/node": "^24.19.2",
     "aws-cdk": "^2.1148.1",
     "esbuild": "^0.28.2",
     "tsx": "^4.23.15",
