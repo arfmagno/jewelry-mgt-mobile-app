@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Typecheck, lint and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint (mobile)
+        run: npm run lint -w mobile
+      - name: Unit tests
+        run: npm test
+      - name: Integration tests (DynamoDB emulator)
+        run: npm run test:integration
+
+  build:
+    name: Infrastructure synth and app bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: CDK synth
+        run: npm run synth
+        env:
+          CDK_DEFAULT_ACCOUNT: "000000000000"
+          CDK_DEFAULT_REGION: us-east-1
+          CLOUDFLARE_ACCOUNT_ID: ci-placeholder
+          R2_BUCKET: ci-placeholder
+      - name: Bundle Android JavaScript
+        working-directory: mobile
+        run: npx expo export --platform android --output-dir dist
