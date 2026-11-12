@@ -176,6 +176,7 @@ function OrderForm({ initial, settings }: { initial: Form; settings: Settings })
                 />
               </View>
               <MoneyField
+                testID="item-price"
                 label="Selling price"
                 value={i.sellingPrice}
                 onChangeText={(sellingPrice) => set({ items: form.items.map((x) => (x.key === i.key ? { ...x, sellingPrice } : x)) })}
