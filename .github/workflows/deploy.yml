@@ -1,0 +1,54 @@
+name: Deploy backend
+
+# Deploys the AWS stack after CI passes on main. Authenticates with GitHub OIDC,
+# so no long-lived AWS keys are stored. Skipped until the repository variables
+# below are configured (see docs/deployment.md).
+#
+# Repository variables:
+#   AWS_DEPLOY_ROLE_ARN   role created by the JewelryGithubDeploy stack
+#   AWS_REGION            e.g. ap-southeast-1
+#   CLOUDFLARE_ACCOUNT_ID Cloudflare account that owns R2 and Workers AI
+#   R2_BUCKET             R2 bucket for photos
+#   ALERT_EMAIL           optional, receives the $1 budget alert
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    if: >-
+      vars.AWS_DEPLOY_ROLE_ARN != '' &&
+      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: CDK deploy
+        run: npm run deploy
+        env:
+          CDK_DEFAULT_REGION: ${{ vars.AWS_REGION }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
