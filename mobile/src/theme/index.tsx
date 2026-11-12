@@ -32,6 +32,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
 }
 
+/** Modal transition that respects the system "reduce motion" setting. */
+export function useModalAnimation(): "slide" | "none" {
+  return useTheme().reduceMotion ? "none" : "slide";
+}
+
 export function useTheme(): Theme {
   const t = useContext(ThemeContext);
   if (!t) throw new Error("useTheme must be used inside ThemeProvider");

@@ -9,7 +9,7 @@ import { pieceLabel } from "@/components/JewelryCard";
 import { EmptyState, Thumb } from "@/components/layout";
 import { Text } from "@/components/Text";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
-import { TOUCH_TARGET, useTheme } from "@/theme";
+import { TOUCH_TARGET, useModalAnimation, useTheme } from "@/theme";
 
 /** Full-screen list of pieces not already in an order. */
 export function PiecePicker({
@@ -22,12 +22,13 @@ export function PiecePicker({
   onClose: () => void;
 }) {
   const { colors } = useTheme();
+  const animation = useModalAnimation();
   const [search, setSearch] = useState("");
   const { data } = useLiveQuery((s) => listJewelry(s, { availability: "available", search, limit: 300 }), [search]);
   const items = (data ?? []).filter((j) => !exclude.includes(j.id));
 
   return (
-    <Modal visible animationType="slide" onRequestClose={onClose}>
+    <Modal visible animationType={animation} onRequestClose={onClose}>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16 }}>
           <Text variant="heading" style={{ flex: 1 }}>

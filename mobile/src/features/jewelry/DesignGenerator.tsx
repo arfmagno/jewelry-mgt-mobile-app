@@ -9,7 +9,7 @@ import { Text } from "@/components/Text";
 import { ApiError } from "@/lib/api";
 import { deleteLocalImage, writeDraft } from "@/lib/images";
 import { useApp } from "@/providers/app";
-import { useTheme } from "@/theme";
+import { useModalAnimation, useTheme } from "@/theme";
 
 type Draft = { uri: string; prompt: string };
 
@@ -28,6 +28,7 @@ export function DesignGenerator({
 }) {
   const { api, store } = useApp();
   const { colors, radius } = useTheme();
+  const animation = useModalAnimation();
   const [description, setDescription] = useState(initialDescription);
   const [enhance, setEnhance] = useState(true);
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -76,7 +77,7 @@ export function DesignGenerator({
   };
 
   return (
-    <Modal visible animationType="slide" onRequestClose={onClose}>
+    <Modal visible animationType={animation} onRequestClose={onClose}>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16 }}>
           <Text variant="heading" style={{ flex: 1 }}>

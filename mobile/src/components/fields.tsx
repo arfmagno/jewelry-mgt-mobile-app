@@ -14,7 +14,7 @@ import {
   type TextInputProps,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TOUCH_TARGET, useTheme } from "@/theme";
+import { TOUCH_TARGET, useModalAnimation, useTheme } from "@/theme";
 import { Button, IconButton } from "./Button";
 import { Text } from "./Text";
 
@@ -203,6 +203,7 @@ export function SelectField<V extends string>({
   testID?: string;
 }) {
   const { colors, radius } = useTheme();
+  const animation = useModalAnimation();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const current = options.find((o) => o.value === value);
@@ -233,7 +234,7 @@ export function SelectField<V extends string>({
         </Text>
         <Ionicons name="chevron-down" size={20} color={colors.textMuted} />
       </Pressable>
-      <Modal visible={open} animationType="slide" onRequestClose={() => setOpen(false)}>
+      <Modal visible={open} animationType={animation} onRequestClose={() => setOpen(false)}>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
           <View style={[styles.modalHeader, { borderColor: colors.divider }]}>
             <Text variant="heading" style={{ flex: 1 }}>

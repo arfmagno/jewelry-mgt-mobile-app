@@ -8,7 +8,7 @@ import { Screen } from "@/components/layout";
 import { Text } from "@/components/Text";
 import { orNull, reportError } from "@/lib/forms";
 import { useStore } from "@/providers/app";
-import { useTheme } from "@/theme";
+import { useModalAnimation, useTheme } from "@/theme";
 
 /** Records a payment (down payment or balance) against an order. */
 export function PaymentForm({
@@ -24,6 +24,7 @@ export function PaymentForm({
 }) {
   const store = useStore();
   const { colors } = useTheme();
+  const animation = useModalAnimation();
   const [amount, setAmount] = useState(moneyToInput(payment?.amount ?? (suggested > 0 ? suggested : null)));
   const [paidAt, setPaidAt] = useState(payment?.paidAt ?? todayIso());
   const [method, setMethod] = useState<Payment["method"]>(payment?.method ?? "cash");
@@ -48,7 +49,7 @@ export function PaymentForm({
   };
 
   return (
-    <Modal visible animationType="slide" onRequestClose={onClose}>
+    <Modal visible animationType={animation} onRequestClose={onClose}>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16 }}>
           <Text variant="heading" style={{ flex: 1 }}>

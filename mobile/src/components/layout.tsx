@@ -218,7 +218,7 @@ export function Thumb({
   size?: number;
   label?: string;
 }) {
-  const { colors, radius } = useTheme();
+  const { colors, radius, reduceMotion } = useTheme();
   const uri = useImageSource(image);
   const box: ViewStyle & ImageStyle = size
     ? { width: size, height: size }
@@ -239,7 +239,7 @@ export function Thumb({
       source={{ uri }}
       style={[box, { borderRadius: radius.md }]}
       contentFit="cover"
-      transition={150}
+      transition={reduceMotion ? 0 : 150}
       accessibilityLabel={label}
       accessible={!!label}
     />
