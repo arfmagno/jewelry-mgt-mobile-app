@@ -146,7 +146,8 @@ function OrderForm({ initial, settings }: { initial: Form; settings: Settings })
           value={form.clientId}
           onChange={(clientId) => set({ clientId })}
           error={errors.clientId}
-          footer={<Button label="New client" icon="person-add-outline" variant="secondary" onPress={() => router.push({ pathname: "/clients/edit", params: { channel: CLIENT_CHANNEL } })} />}
+          createLabel="New client"
+          onCreate={() => router.push({ pathname: "/clients/edit", params: { channel: CLIENT_CHANNEL } })}
         />
         <Columns>
           <DateField label="Order date" required value={form.orderDate} onChange={(d) => d && set({ orderDate: d })} />

@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TOUCH_TARGET, useTheme } from "@/theme";
-import { IconButton } from "./Button";
+import { Button, IconButton } from "./Button";
 import { Text } from "./Text";
 
 // ── Shared field chrome: visible label, hint, and an error that is announced ──
@@ -184,7 +184,8 @@ export function SelectField<V extends string>({
   error,
   hint,
   required,
-  footer,
+  createLabel,
+  onCreate,
   testID,
 }: {
   label: string;
@@ -196,7 +197,9 @@ export function SelectField<V extends string>({
   error?: string | null;
   hint?: string;
   required?: boolean;
-  footer?: ReactNode;
+  /** Offers creating a new record from the picker (e.g. "New client"). */
+  createLabel?: string;
+  onCreate?: () => void;
   testID?: string;
 }) {
   const { colors, radius } = useTheme();
@@ -273,7 +276,21 @@ export function SelectField<V extends string>({
                 No matches.
               </Text>
             }
-            ListFooterComponent={footer ? <View style={{ padding: 16 }}>{footer}</View> : undefined}
+            ListFooterComponent={
+              onCreate ? (
+                <View style={{ padding: 16 }}>
+                  <Button
+                    label={createLabel ?? "Add new"}
+                    icon="add"
+                    variant="secondary"
+                    onPress={() => {
+                      setOpen(false);
+                      onCreate();
+                    }}
+                  />
+                </View>
+              ) : undefined
+            }
           />
         </SafeAreaView>
       </Modal>
