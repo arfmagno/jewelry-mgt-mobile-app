@@ -12,12 +12,13 @@ import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { useSettings } from "@/hooks/useSettings";
 import { trim } from "@/lib/format";
 import { fieldErrors, orNull, reportError, type FieldErrors } from "@/lib/forms";
+import { selection } from "@/lib/selection";
 import { useStore } from "@/providers/app";
 
 type Form = { name: string; kind: Material["kind"]; unit: Material["unit"]; metal: Material["metal"]; purity: string; notes: string };
 
 export default function MaterialEditScreen() {
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id, channel } = useLocalSearchParams<{ id?: string; channel?: string }>();
   const { data, loading } = useLiveQuery((s) => (id ? s.get("materials", id) : Promise.resolve(null)), [id]);
   const [initial, setInitial] = useState<Form | null>(null);
   if (!initial && !loading) {
@@ -31,10 +32,10 @@ export default function MaterialEditScreen() {
     });
   }
   if (!initial) return <Loading />;
-  return <MaterialForm id={id} initial={initial} />;
+  return <MaterialForm id={id} initial={initial} channel={channel} />;
 }
 
-function MaterialForm({ id, initial }: { id?: string; initial: Form }) {
+function MaterialForm({ id, initial, channel }: { id?: string; initial: Form; channel?: string }) {
   const store = useStore();
   const router = useRouter();
   const settings = useSettings();
@@ -69,7 +70,8 @@ function MaterialForm({ id, initial }: { id?: string; initial: Form }) {
       return;
     }
     try {
-      await store.upsert("materials", id, input);
+      const saved = await store.upsert("materials", id, input);
+      if (channel) selection.deliver(channel, saved.id);
       router.back();
     } catch (e) {
       reportError(e);
