@@ -1,0 +1,23 @@
+{
+  "name": "@jewelry/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offline-first local store, domain operations and sync engine (platform-agnostic)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --exclude test/integration/**",
+    "test:integration": "vitest run test/integration"
+  },
+  "dependencies": {
+    "@jewelry/shared": "*"
+  },
+  "devDependencies": {
+    "@jewelry/backend": "*",
+    "@types/sql.js": "^1.4.9",
+    "sql.js": "^1.12.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
