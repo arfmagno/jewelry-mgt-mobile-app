@@ -22,7 +22,7 @@
     "@aws-sdk/s3-request-presigner": "^3.700.0",
     "@jewelry/shared": "*",
     "aws-jwt-verify": "^4.0.1",
-    "zod": "^3.24.1"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.146",

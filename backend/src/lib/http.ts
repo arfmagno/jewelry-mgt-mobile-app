@@ -1,5 +1,5 @@
 import type { APIGatewayProxyResultV2 } from "aws-lambda";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 export class HttpError extends Error {
   constructor(
@@ -33,17 +33,19 @@ export function errorResponse(err: unknown): APIGatewayProxyResultV2 {
   }
   if (isZodError(err)) {
     return json(400, {
-      error: { code: "validation_error", message: "Invalid request", details: err.flatten() },
+      error: { code: "validation_error", message: "Invalid request", details: flattenError(err) },
     });
   }
   console.error("Unhandled error", err);
   return json(500, { error: { code: "internal_error", message: "Something went wrong" } });
 }
 
-/** Structural check: workspace packages may each resolve their own copy of zod. */
+/** Structural check, robust to workspace packages resolving separate copies of zod. */
 export function isZodError(err: unknown): err is ZodError {
-  return err instanceof ZodError || (err instanceof Error && err.name === "ZodError" && "flatten" in err);
+  return err instanceof ZodError || (err instanceof Error && err.name === "ZodError" && "issues" in err);
 }
+
+export const flattenError = (err: ZodError) => z.flattenError(err);
 
 export function parseJsonBody(body: string | undefined, isBase64Encoded?: boolean): unknown {
   if (!body) return {};

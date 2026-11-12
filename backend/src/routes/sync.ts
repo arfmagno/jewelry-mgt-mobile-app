@@ -9,7 +9,7 @@ import {
   type PushResult,
   type TableName,
 } from "@jewelry/shared";
-import { badRequest, isZodError, json, type JsonResult } from "../lib/http";
+import { badRequest, flattenError, isZodError, json, type JsonResult } from "../lib/http";
 import type { RecordRepo, StoredRecord } from "../lib/records";
 import type { Storage } from "../lib/storage";
 
@@ -31,7 +31,7 @@ export async function push(userId: string, body: unknown, deps: SyncDeps): Promi
     try {
       parsed = parseRecord(table, raw) as Record<string, unknown>;
     } catch (e) {
-      throw badRequest(`Invalid ${table} record ${String(raw.id)}`, isZodError(e) ? e.flatten() : undefined);
+      throw badRequest(`Invalid ${table} record ${String(raw.id)}`, isZodError(e) ? flattenError(e) : undefined);
     }
     results.push(await applyOne(userId, table, parsed, deps));
   }

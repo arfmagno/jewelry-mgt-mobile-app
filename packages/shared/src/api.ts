@@ -23,7 +23,7 @@ export const pushRequestSchema = z.object({
     .array(
       z.object({
         table: z.string().refine(isTableName, "Unknown table"),
-        record: z.record(z.unknown()),
+        record: z.record(z.string(), z.unknown()),
       }),
     )
     .min(1)
@@ -42,7 +42,7 @@ export type PushResult = {
 export type PushResponse = { results: PushResult[]; serverTime: string };
 
 export const pullQuerySchema = z.object({
-  since: z.string().datetime().optional(),
+  since: z.iso.datetime().optional(),
   cursor: z.string().max(2000).optional(),
   limit: z.coerce.number().int().min(1).max(MAX_PULL_PAGE).default(MAX_PULL_PAGE),
 });

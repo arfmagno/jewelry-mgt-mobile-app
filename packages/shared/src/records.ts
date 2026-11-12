@@ -32,7 +32,7 @@ const id = z.string().min(10).max(40);
 const ref = id;
 const optRef = id.nullable();
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
-const timestamp = z.string().datetime();
+const timestamp = z.iso.datetime();
 const name = (max: number) => z.string().trim().min(1, "Required").max(max);
 const optText = (max: number) => z.string().trim().max(max).nullable();
 const money = z.number().int().min(0).max(1_000_000_000_000);
@@ -293,5 +293,5 @@ export function parseRecord<T extends TableName>(table: T, raw: unknown): Record
     return meta as RecordOf<T>;
   }
   const fields = fieldSchemas[table].parse(raw);
-  return { ...meta, ...fields } as RecordOf<T>;
+  return { ...meta, ...fields } as unknown as RecordOf<T>;
 }
