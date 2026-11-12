@@ -37,7 +37,7 @@ export function FieldChrome({ label, hint, error, required, children }: ChromePr
         </Text>
       ) : null}
       {error ? (
-        <View style={styles.errorRow} accessibilityLiveRegion="polite" accessibilityRole="alert">
+        <View style={styles.errorRow} accessible accessibilityLiveRegion="polite" accessibilityRole="alert">
           <Ionicons name="alert-circle" size={16} color={colors.danger} accessibilityElementsHidden />
           <Text variant="caption" color={colors.danger}>
             {error}
