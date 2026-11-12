@@ -1,4 +1,4 @@
-import { SyncEngine, uploadPendingImages, type Store, type SyncStatus } from "@jewelry/core";
+import { purgeExpired, SyncEngine, uploadPendingImages, type Store, type SyncStatus } from "@jewelry/core";
 import * as Network from "expo-network";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AppState } from "react-native";
