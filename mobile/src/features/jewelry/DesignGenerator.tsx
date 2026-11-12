@@ -125,7 +125,7 @@ export function DesignGenerator({
                 accessibilityLabel={`Generated design for: ${description}`}
               />
               <Text variant="caption" muted>
-                Designs you don't keep are discarded.
+                {"Designs you don't keep are discarded."}
               </Text>
             </View>
           ) : null}
