@@ -52,6 +52,14 @@ describe("OrderAssistant", () => {
     expect((await listClients(store)).map((c) => c.lastName)).toContain("Reyes");
   });
 
+  it("matches a client's surname as a whole word only", async () => {
+    const { store, bot } = await setup();
+    await store.insert("clients", clientInput({ firstName: "Bea", lastName: "Go", phone: "09173335555" }));
+    const turn = await bot.send("Bea Ramos wants an 18K white gold ring, 18,000");
+    expect(turn.text).not.toContain("Found Bea Go");
+    expect(turn.expecting).toBe("pickClient");
+  });
+
   it("asks which client when a name fits several", async () => {
     const { store, bot } = await setup();
     await store.insert("clients", clientInput({ firstName: "Maria", lastName: "Reyes", phone: "09173334444" }));

@@ -364,8 +364,10 @@ export class OrderAssistant {
     }
 
     // A client's full name anywhere in the message wins over a guessed name.
-    const lower = ` ${text.toLowerCase()} `;
-    const named = clients.filter((c) => lower.includes(` ${c.firstName.toLowerCase()} `) && lower.includes(` ${c.lastName.toLowerCase()}`));
+    // Whole words only, so "Go" isn't found in "gold".
+    const words = (s: string) => ` ${s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim()} `;
+    const said = words(text);
+    const named = clients.filter((c) => said.includes(words(c.firstName)) && said.includes(words(c.lastName)));
     if (named.length === 1) return this.useClient(named[0]!);
 
     const query = intent.clientName;
