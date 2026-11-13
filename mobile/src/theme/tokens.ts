@@ -40,26 +40,27 @@ export type Palette = {
 };
 
 export const dark: Palette = {
-  background: "#0D0C0A",
-  surface: "#15130F",
-  surfaceRaised: "#1E1B16",
-  text: "#F3EEE3",
-  textMuted: "#A39E93",
-  accent: "#D4AF37",
-  onAccent: "#0D0C0A",
-  accentSoft: "#2A2418",
-  border: "#6E6455",
-  divider: "#26221B",
+  // Warm espresso rather than pure black, with soft champagne gold.
+  background: "#141210",
+  surface: "#1C1A17",
+  surfaceRaised: "#25221E",
+  text: "#F2EDE4",
+  textMuted: "#A8A196",
+  accent: "#CDB27A",
+  onAccent: "#141210",
+  accentSoft: "#2A251D",
+  border: "#776E61",
+  divider: "#2E2A25",
   danger: "#F28B82",
-  onDanger: "#0D0C0A",
+  onDanger: "#141210",
   success: "#8FD19E",
   warning: "#F2C46D",
-  focus: "#F4D77A",
+  focus: "#E6CF95",
   scrim: "rgba(0,0,0,0.6)",
-  ink: "#D9BC6A",
-  onInk: "#0D0C0A",
-  gold: "#A8893A",
-  stage: ["#26211A", "#121010"],
+  ink: "#CDB27A",
+  onInk: "#141210",
+  gold: "#8C7748",
+  stage: ["#3A352E", "#1D1A17"],
 };
 
 export const light: Palette = {
