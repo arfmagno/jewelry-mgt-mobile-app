@@ -5,6 +5,7 @@ import { Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TOUCH_TARGET, useTheme } from "@/theme";
 import type { IconName } from "./Button";
+import { GoldFill } from "./gold";
 import { Text } from "./Text";
 
 const ACTIONS: { label: string; hint: string; icon: IconName; href: Href; testID: string }[] = [
@@ -34,9 +35,10 @@ export function QuickAddButton() {
         accessibilityLabel="Add new"
         accessibilityHint="Choose a piece, order, client or purchase"
         onPress={() => setOpen(true)}
-        style={({ pressed }) => [styles.plus, { backgroundColor: colors.accent, borderColor: colors.surface, opacity: pressed ? 0.85 : 1 }]}
+        style={({ pressed }) => [styles.plus, { backgroundColor: colors.gold[2], borderColor: colors.surface, opacity: pressed ? 0.85 : 1 }]}
       >
-        <Ionicons name="add" size={32} color={colors.onAccent} />
+        <GoldFill radius={30} />
+        <Ionicons name="add" size={32} color={colors.onGold} />
       </Pressable>
 
       <Modal visible={open} transparent animationType={reduceMotion ? "none" : "fade"} statusBarTranslucent navigationBarTranslucent onRequestClose={() => setOpen(false)}>
@@ -87,6 +89,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     borderWidth: 4,
+    overflow: "hidden",
     marginTop: -24,
     alignItems: "center",
     justifyContent: "center",

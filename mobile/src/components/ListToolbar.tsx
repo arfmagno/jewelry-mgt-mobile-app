@@ -20,7 +20,7 @@ export function ListToolbar({ summary, actions }: { summary: string; actions: To
   const { colors, radius } = useTheme();
   return (
     <View style={styles.row}>
-      <Text variant="label" muted style={{ flex: 1 }} accessibilityLiveRegion="polite">
+      <Text variant="eyebrow" muted style={{ flex: 1 }} accessibilityLiveRegion="polite">
         {summary}
       </Text>
       {actions.map((a) => (
