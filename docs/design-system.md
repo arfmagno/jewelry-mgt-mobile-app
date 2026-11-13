@@ -36,12 +36,13 @@ Tokens live in `mobile/src/theme/tokens.ts`. Components never hard-code colours.
 |---|---|
 | Contrast (1.4.3, 1.4.11) | Every text pair is at least 4.5:1 and input borders and focus rings at least 3:1, in both themes |
 | Target size (2.5.8) | Every touch target is at least 48 dp (`TOUCH_TARGET`); icon buttons use `hitSlop` |
-| Text resize (1.4.4) | Font scaling always on; layouts wrap instead of truncating; display headings are capped at 1.6× so they stay on screen |
+| Text resize (1.4.4) | Font scaling always on; layouts wrap instead of truncating; display headings are capped at 1.6× so they stay on screen; tab labels shrink slightly rather than cut off. See the [pieces](screenshots/pieces-large-text.png) and [orders](screenshots/orders-large-text.png) at 150% text |
 | Use of colour (1.4.1) | Status pills, sync state and selected chips always carry text or an icon as well as colour |
 | Name, role, value (4.1.2) | Buttons, radios (choice chips and picture tiles), checkboxes (multi-select tiles), switches, counters and pickers expose role, label and state; icon-only buttons have spoken labels |
 | Labels (3.3.2) | Every input has a visible label, with required fields marked in text and hints below |
 | Error identification (3.3.1) | Field errors appear next to the field as one live, polite alert with an icon and text |
-| Status messages (4.1.3) | Validation summaries and finished AI designs are announced; field errors and the report year use live regions |
+| Status messages (4.1.3) | Validation summaries and finished AI designs are announced; field errors and the report year use live regions; each reply from the order assistant is announced as it arrives |
+| Conversation | In *Describe an order*, every suggestion is a real button that reads its details (code, description, cost), your own messages read as "You: …", and the order summary reads one line at a time. Typing can be replaced by the keyboard's microphone |
 | Charts | Report bars are decorative; each month is one accessible element that reads its exact figures |
 | Motion | With the system *reduce motion* setting on, modals open without sliding, tabs change without sliding and images appear without fading |
 | Gestures (2.5.1) | Swiping sideways between tabs is a shortcut; every page is also reachable with a single tap on the tab bar or the section tabs |
