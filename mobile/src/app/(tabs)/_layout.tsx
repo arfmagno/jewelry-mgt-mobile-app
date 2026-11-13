@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { QuickAddButton } from "@/components/QuickAdd";
 import { useApp } from "@/providers/app";
 import { useLayout, useTheme } from "@/theme";
 
@@ -36,6 +37,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <Ionicons name="receipt-outline" color={String(color)} size={size} />,
         }}
       />
+      <Tabs.Screen name="add" options={{ title: "Add", tabBarButton: () => <QuickAddButton /> }} />
       <Tabs.Screen
         name="clients"
         options={{
