@@ -3,9 +3,9 @@ import { useRouter, type Href } from "expo-router";
 import { useState } from "react";
 import { Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Line } from "react-native-svg";
 import { TOUCH_TARGET, useTheme } from "@/theme";
 import type { IconName } from "./Button";
-import { GoldFill } from "./gold";
 import { Text } from "./Text";
 
 const ACTIONS: { label: string; hint: string; icon: IconName; href: Href; testID: string }[] = [
@@ -15,10 +15,12 @@ const ACTIONS: { label: string; hint: string; icon: IconName; href: Href; testID
   { label: "Purchase", hint: "Materials you bought", icon: "cart-outline", href: "/purchases/edit", testID: "quick-add-purchase" },
 ];
 
-/** The raised + in the middle of the tab bar: opens a sheet to add any record from anywhere. */
+/** The + in the middle of the tab bar, a black disc with a fine gold cross: opens a sheet to add any record from anywhere. */
 export function QuickAddButton() {
   const router = useRouter();
-  const { colors, radius, reduceMotion } = useTheme();
+  const { colors, radius, reduceMotion, scheme } = useTheme();
+  // Ink in the light theme; a raised panel in the dark one so the disc still stands apart.
+  const disc = scheme === "dark" ? colors.surfaceRaised : colors.text;
   const { bottom } = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
 
@@ -35,10 +37,12 @@ export function QuickAddButton() {
         accessibilityLabel="Add new"
         accessibilityHint="Choose a piece, order, client or purchase"
         onPress={() => setOpen(true)}
-        style={({ pressed }) => [styles.plus, { backgroundColor: colors.gold[2], borderColor: colors.surface, opacity: pressed ? 0.85 : 1 }]}
+        style={({ pressed }) => [styles.plus, { backgroundColor: disc, borderColor: colors.gold[1], opacity: pressed ? 0.8 : 1 }]}
       >
-        <GoldFill radius={30} />
-        <Ionicons name="add" size={32} color={colors.onGold} />
+        <Svg width={20} height={20} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <Line x1={10} y1={1} x2={10} y2={19} stroke={colors.gold[0]} strokeWidth={1.6} strokeLinecap="round" />
+          <Line x1={1} y1={10} x2={19} y2={10} stroke={colors.gold[0]} strokeWidth={1.6} strokeLinecap="round" />
+        </Svg>
       </Pressable>
 
       <Modal visible={open} transparent animationType={reduceMotion ? "none" : "fade"} statusBarTranslucent navigationBarTranslucent onRequestClose={() => setOpen(false)}>
@@ -85,19 +89,12 @@ export function QuickAddButton() {
 const styles = StyleSheet.create({
   slot: { flex: 1, alignItems: "center", justifyContent: "center" },
   plus: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 4,
-    overflow: "hidden",
-    marginTop: -24,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: StyleSheet.hairlineWidth * 2,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
   },
   sheet: { position: "absolute", left: 8, right: 8, bottom: 8, padding: 16, gap: 12 },
   head: { flexDirection: "row", alignItems: "center" },
