@@ -2,7 +2,7 @@
   "expo": {
     "name": "Hiyas",
     "slug": "jewelry-hiyas",
-    "scheme": "atelier",
+    "scheme": "hiyas",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
@@ -10,10 +10,10 @@
     "backgroundColor": "#0E0D0B",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "dev.atelier.jewelry"
+      "bundleIdentifier": "dev.hiyas.jewelry"
     },
     "android": {
-      "package": "dev.atelier.jewelry",
+      "package": "dev.hiyas.jewelry",
       "adaptiveIcon": {
         "backgroundColor": "#0E0D0B",
         "foregroundImage": "./assets/android-icon-foreground.png",
