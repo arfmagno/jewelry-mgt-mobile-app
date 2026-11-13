@@ -1,5 +1,18 @@
 import type { JewelryDetail } from "@jewelry/core";
-import { emptyComponent, emptyCost, emptyPiece, emptyStone, fromDetail, toDraft, validate } from "../form";
+import {
+  emptyComponent,
+  emptyCost,
+  emptyPiece,
+  emptyStone,
+  errorsForStep,
+  formTotals,
+  fromDetail,
+  stepOfError,
+  suggestDescription,
+  toDraft,
+  validate,
+  withPartTypes,
+} from "../form";
 
 const units = { lengthUnit: "in", ringSizeSystem: "us" } as const;
 
@@ -79,5 +92,43 @@ describe("jewelry form", () => {
     expect(e["components.0.ringSize"]).toBe("Enter a valid number");
     expect(e["components.0.stones.0.quantity"]).toBe("Enter a whole number");
     expect(e["costs.0.unitCost"]).toBeDefined();
+  });
+
+  it("assigns each error to the step that shows the field", () => {
+    expect(stepOfError("components")).toBe(0);
+    expect(stepOfError("components.1.weightG")).toBe(1);
+    expect(stepOfError("components.0.ringSize")).toBe(2);
+    expect(stepOfError("components.0.stones.2.unitCost")).toBe(3);
+    expect(stepOfError("costs.0.unitCost")).toBe(4);
+    expect(stepOfError("description")).toBe(5);
+    expect(errorsForStep({ description: "x", "costs.0.unitCost": "y" }, 4)).toEqual({ "costs.0.unitCost": "y" });
+  });
+
+  it("keeps details of parts whose type stays chosen", () => {
+    const f = emptyPiece();
+    f.components = [{ ...emptyComponent("ring"), ringSize: "7" }];
+    const parts = withPartTypes(f, ["earrings", "ring"]);
+    expect(parts.map((c) => c.type)).toEqual(["ring", "earrings"]);
+    expect(parts[0]!.ringSize).toBe("7");
+    expect(withPartTypes(f, ["earrings"]).map((c) => c.type)).toEqual(["earrings"]);
+  });
+
+  it("totals stones and cost lines as they are typed", () => {
+    const f = emptyPiece();
+    f.components = [{ ...emptyComponent("ring"), stones: [{ ...emptyStone(), quantity: "3", unitCost: "1,500" }, { ...emptyStone(), unitCost: "" }] }];
+    f.costs = [{ ...emptyCost("metal"), quantity: "2.5", unitCost: "4000" }, { ...emptyCost("labor"), unitCost: "" }];
+    expect(formTotals(f)).toEqual({ stones: 450_000, costs: 1_000_000, total: 1_450_000 });
+  });
+
+  it("suggests a description from the choices", () => {
+    const f = emptyPiece();
+    f.components = [{ ...emptyComponent("ring"), stones: [{ ...emptyStone(), quantity: "3" }] }];
+    expect(suggestDescription(f)).toBe("18K yellow gold ring with 3 diamonds");
+    f.metal = "silver";
+    f.purity = "925";
+    f.components = withPartTypes(f, ["chain", "pendant"]);
+    expect(suggestDescription(f)).toBe("925 silver necklace");
+    f.components = [{ ...emptyComponent("ring"), stones: [{ ...emptyStone(), stoneKind: "gemstone", gemName: "Ruby", quantity: "2" }] }, emptyComponent("earrings")];
+    expect(suggestDescription(f)).toBe("925 silver ring and earrings set with 2 rubies");
   });
 });

@@ -1,6 +1,11 @@
 import type { ComponentDraft, JewelryDetail, JewelryDraft } from "@jewelry/core";
 import {
+  COMPONENT_TYPES,
   hasMetalColor,
+  lineTotal,
+  METAL_COLORS,
+  PIECE_TYPES,
+  pieceType,
   lengthToMm,
   mmToLength,
   moneyToInput,
@@ -146,7 +151,7 @@ export const emptyPiece = (origin: Jewelry["origin"] = "on_hand"): PieceForm => 
   metalColor: "yellow",
   weightG: "",
   notes: "",
-  components: [emptyComponent()],
+  components: [],
   costs: [],
   images: [],
 });
@@ -306,7 +311,7 @@ export function validate(f: PieceForm): FormErrors {
     else if (opts.integer && !Number.isInteger(n)) e[path] = "Enter a whole number";
   };
   if (!f.description.trim()) e.description = "Describe the piece";
-  if (f.components.length === 0) e.components = "Add at least one part";
+  if (f.components.length === 0) e.components = "Choose what you are making";
   num("weightG", f.weightG);
   f.components.forEach((c, i) => {
     num(`components.${i}.weightG`, c.weightG);
@@ -331,3 +336,106 @@ export function validate(f: PieceForm): FormErrors {
 }
 
 const round = (n: number) => Math.round(n * 100) / 100;
+
+// ── Steps ───────────────────────────────────────────────────────────────
+
+export const STEPS = [
+  { key: "type", label: "Type" },
+  { key: "metal", label: "Metal" },
+  { key: "details", label: "Sizes" },
+  { key: "stones", label: "Stones" },
+  { key: "costs", label: "Costs" },
+  { key: "finish", label: "Finish" },
+] as const;
+export type StepKey = (typeof STEPS)[number]["key"];
+
+const STEP_ERRORS: Record<StepKey, RegExp> = {
+  type: /^components$/,
+  metal: /^(weightG|components\.\d+\.weightG)$/,
+  details: /^components\.\d+\.(ringSize|length|widthMm)$/,
+  stones: /^components\.\d+\.stones\./,
+  costs: /^costs\./,
+  finish: /^description$/,
+};
+
+/** The step a validation error belongs to, so the form can open it. */
+export function stepOfError(path: string): number {
+  const i = STEPS.findIndex((s) => STEP_ERRORS[s.key].test(path));
+  return i === -1 ? STEPS.length - 1 : i;
+}
+
+export function errorsForStep(errors: FormErrors, step: number): FormErrors {
+  return Object.fromEntries(Object.entries(errors).filter(([path]) => stepOfError(path) === step));
+}
+
+// ── Derived values ─────────────────────────────────────────────────────
+
+type PartType = JewelryComponent["type"];
+
+/** Keeps parts whose type is still chosen (with their details) and adds new ones, in catalogue order. */
+export function withPartTypes(f: PieceForm, types: readonly PartType[]): ComponentForm[] {
+  const kept = f.components.filter((c) => types.includes(c.type));
+  const added = types.filter((t) => !kept.some((c) => c.type === t)).map((t) => emptyComponent(t));
+  const order = (t: PartType) => COMPONENT_TYPES.values.indexOf(t);
+  return [...kept, ...added].sort((a, b) => order(a.type) - order(b.type));
+}
+
+/** Total metal weight entered so far, as typed (for prefilling the metal cost). */
+export function formWeight(f: PieceForm): string {
+  if (f.sameMetalForAll) return f.weightG;
+  const sum = f.components.reduce((s, c) => s + (parseNumber(c.weightG) ?? 0), 0);
+  return sum ? numberToInput(sum, 2) : "";
+}
+
+/** Running totals in centavos; lines that are not filled in yet count as zero. */
+export function formTotals(f: PieceForm): { stones: number; costs: number; total: number } {
+  const stones = f.components
+    .flatMap((c) => c.stones)
+    .reduce((s, st) => s + (parseNumber(st.quantity) ?? 0) * (parseMoney(st.unitCost) ?? 0), 0);
+  const costs = f.costs.reduce((s, c) => {
+    const unit = parseMoney(c.unitCost);
+    const qty = parseNumber(c.quantity);
+    return s + (unit !== null && qty ? lineTotal(qty, unit) : 0);
+  }, 0);
+  return { stones: Math.round(stones), costs, total: Math.round(stones) + costs };
+}
+
+const STONE_WORDS: Record<JewelryStone["stoneKind"], string> = {
+  natural_diamond: "diamond",
+  lab_grown_diamond: "lab-grown diamond",
+  moissanite: "moissanite",
+  cubic_zirconia: "cubic zirconia",
+  gemstone: "gemstone",
+  other: "stone",
+};
+
+function metalWords(m: MetalForm): string {
+  if (m.metal === "gold") {
+    const colour = m.metalColor ? METAL_COLORS.labels[m.metalColor].toLowerCase() : null;
+    return [m.purity || null, colour, "gold"].filter(Boolean).join(" ");
+  }
+  if (m.metal === "silver") return [m.purity || null, "silver"].filter(Boolean).join(" ");
+  return "";
+}
+
+/** A plain description from the choices made, e.g. "18K yellow gold ring with 3 diamonds". */
+export function suggestDescription(f: PieceForm): string {
+  const type = pieceType(f.components.map((c) => c.type));
+  if (!type) return "";
+  const what =
+    type === "set"
+      ? `${f.components.map((c) => COMPONENT_TYPES.labels[c.type].toLowerCase()).join(" and ")} set`
+      : PIECE_TYPES.labels[type].toLowerCase();
+  const metal = f.sameMetalForAll ? metalWords(f) : "";
+  const stones = f.components.flatMap((c) => c.stones);
+  const count = stones.reduce((s, st) => s + (parseNumber(st.quantity) ?? 0), 0);
+  const kinds = new Set(stones.map((s) => (s.stoneKind === "gemstone" && s.gemName.trim() ? s.gemName.trim().toLowerCase() : STONE_WORDS[s.stoneKind])));
+  let withStones = "";
+  if (count > 0) {
+    const word = kinds.size === 1 ? [...kinds][0]! : "stone";
+    const plural = count > 1 && /(diamond|stone|gemstone|ruby|sapphire|emerald|pearl)$/.test(word) ? (word.endsWith("y") ? `${word.slice(0, -1)}ies` : `${word}s`) : word;
+    withStones = ` with ${count} ${plural}`;
+  }
+  const text = [metal, what].filter(Boolean).join(" ") + withStones;
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
