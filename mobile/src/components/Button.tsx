@@ -90,7 +90,7 @@ export function IconButton({ icon, label, onPress, color, disabled, testID }: Ic
   );
 }
 
-/** Floating "add" action placed above the tab bar. */
+/** Floating "add" button above the tab bar: a plus sign, with `label` read out by screen readers. */
 export function Fab({ label, onPress, testID }: { label: string; onPress: () => void; testID?: string }) {
   const { colors, radius } = useTheme();
   return (
@@ -104,10 +104,7 @@ export function Fab({ label, onPress, testID }: { label: string; onPress: () => 
         { backgroundColor: colors.accent, borderRadius: radius.pill, opacity: pressed ? 0.85 : 1 },
       ]}
     >
-      <Ionicons name="add" size={24} color={colors.onAccent} />
-      <Text variant="label" color={colors.onAccent}>
-        {label}
-      </Text>
+      <Ionicons name="add" size={30} color={colors.onAccent} />
     </Pressable>
   );
 }
@@ -125,11 +122,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 20,
     bottom: 20,
-    minHeight: 56,
-    paddingHorizontal: 20,
-    flexDirection: "row",
+    width: 56,
+    height: 56,
     alignItems: "center",
-    gap: 8,
+    justifyContent: "center",
     elevation: 4,
     shadowColor: "#000",
     shadowOpacity: 0.3,
