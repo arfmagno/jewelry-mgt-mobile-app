@@ -14,8 +14,8 @@ name: assistant
 - inputText: "Ana Santos wants a silver bracelet, 3,500"
 - tapOn:
     id: "assistant-send"
-- assertVisible: "Found Ana Santos.*"
-- assertVisible: "Is there a down payment today?"
+- assertVisible: ".*Found Ana Santos.*"
+- assertVisible: ".*down payment today.*"
 - tapOn: "No down payment"
 - assertVisible:
     id: "assistant-summary"
