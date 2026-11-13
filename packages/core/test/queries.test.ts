@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getSettings, saveJewelry, saveJobOrder, savePurchase, saveSettings } from "../src/aggregates";
+import { assignMissingCodes, getSettings, saveJewelry, saveJobOrder, savePurchase, saveSettings } from "../src/aggregates";
 import {
   getJewelry,
   getOrder,
@@ -24,6 +24,31 @@ describe("clients", () => {
 });
 
 describe("jewelry", () => {
+  it("numbers new pieces and orders on the device", async () => {
+    const { store } = await testStore();
+    const first = await saveJewelry(store, ringDraft());
+    const second = await saveJewelry(store, ringDraft());
+    expect((await store.get("jewelries", first))?.code).toBe("JW-00001");
+    expect((await store.get("jewelries", second))?.code).toBe("JW-00002");
+    // Editing keeps the code.
+    await saveJewelry(store, { ...ringDraft(), id: first });
+    expect((await store.get("jewelries", first))?.code).toBe("JW-00001");
+
+    const clientId = (await store.insert("clients", clientInput())).id;
+    const orderId = await saveJobOrder(store, { clientId, orderDate: "2026-04-01", status: "in_production", notes: null, items: [{ jewelryId: first, sellingPrice: 1 }] });
+    expect((await store.get("jobOrders", orderId))?.code).toBe("JO-00001");
+  });
+
+  it("gives older records without a code the next numbers, oldest first", async () => {
+    const { store } = await testStore();
+    const a = await saveJewelry(store, ringDraft());
+    const b = await saveJewelry(store, ringDraft());
+    await store.db.run("UPDATE jewelries SET code = NULL WHERE id = ?", [b]);
+    expect(await assignMissingCodes(store)).toBe(1);
+    expect((await store.get("jewelries", a))?.code).toBe("JW-00001");
+    expect((await store.get("jewelries", b))?.code).toBe("JW-00002");
+  });
+
   it("adds priced stones to the piece cost everywhere it is shown", async () => {
     const { store } = await testStore();
     const base = ringDraft();

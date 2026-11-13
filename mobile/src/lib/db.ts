@@ -1,4 +1,4 @@
-import { createUlid, migrate, Store, type SqlDb, type SqlValue } from "@jewelry/core";
+import { assignMissingCodes, createUlid, migrate, Store, type SqlDb, type SqlValue } from "@jewelry/core";
 import * as Crypto from "expo-crypto";
 import { openDatabaseAsync, type SQLiteDatabase } from "expo-sqlite";
 
@@ -22,5 +22,7 @@ export async function openStore(name = "jewelry.db"): Promise<Store> {
   await db.execAsync("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = OFF;");
   const sql = sqliteAdapter(db);
   await migrate(sql);
-  return new Store(sql, { newId });
+  const store = new Store(sql, { newId });
+  await assignMissingCodes(store);
+  return store;
 }

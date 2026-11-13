@@ -62,7 +62,8 @@ describe("device ↔ backend sync (integration)", () => {
       method: "cash",
       notes: null,
     });
-    expect((await phone.store.get("jobOrders", orderId))?.code).toBeNull();
+    // Numbered on the phone before any sync; the server keeps the code.
+    expect((await phone.store.get("jobOrders", orderId))?.code).toBe("JO-00001");
 
     clock.advance(1000);
     await syncPhone.sync();

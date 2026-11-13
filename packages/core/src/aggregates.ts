@@ -1,5 +1,7 @@
 import {
+  CODE_PREFIXES,
   DEFAULT_SETTINGS,
+  formatCode,
   SETTINGS_ID,
   type FieldsInput,
   type Settings,
@@ -25,6 +27,37 @@ export type JewelryDraft = WithId<Omit<FieldsInput<"jewelries">, "code">> & {
   images: WithId<Omit<FieldsInput<"jewelryImages">, "jewelryId" | "sortOrder"> & { localUri?: string | null }>[];
 };
 
+type CodedTable = "jewelries" | "jobOrders";
+
+/**
+ * Next human-readable code (JW-00001, JO-00001) for a new record, numbered on
+ * the device so pieces and orders are named even when offline. The server keeps
+ * these codes and moves its own counter past them.
+ */
+export async function nextCode(store: Store, table: CodedTable): Promise<string> {
+  const prefix = CODE_PREFIXES[table]!;
+  const [row] = await store.query<{ n: number | null }>(
+    `SELECT MAX(CAST(substr(code, ${prefix.length + 2}) AS INTEGER)) AS n FROM ${table} WHERE code LIKE ?`,
+    [`${prefix}-%`],
+  );
+  return formatCode(prefix, (row?.n ?? 0) + 1);
+}
+
+/** Gives a code to records created before codes were numbered on the device, oldest first. */
+export async function assignMissingCodes(store: Store): Promise<number> {
+  let assigned = 0;
+  for (const table of ["jewelries", "jobOrders"] as const) {
+    const rows = await store.query<{ id: string }>(
+      `SELECT id FROM ${table} WHERE code IS NULL AND purgedAt IS NULL ORDER BY createdAt`,
+    );
+    for (const { id } of rows) {
+      await store.update(table, id, { code: await nextCode(store, table) });
+      assigned++;
+    }
+  }
+  return assigned;
+}
+
 async function syncChildren<T extends TableName>(
   store: Store,
   table: T,
@@ -48,7 +81,7 @@ export async function saveJewelry(store: Store, draft: JewelryDraft): Promise<st
   return store.transaction(async () => {
     const { components, costs, images, id, ...fields } = draft;
     const existing = id ? await store.get("jewelries", id) : null;
-    const piece = await store.upsert("jewelries", id, { ...fields, code: existing?.code ?? null });
+    const piece = await store.upsert("jewelries", id, { ...fields, code: existing?.code ?? (await nextCode(store, "jewelries")) });
 
     const componentIds: string[] = [];
     for (const [i, c] of components.entries()) {
@@ -117,7 +150,7 @@ export async function saveJobOrder(store: Store, draft: OrderDraft): Promise<str
   return store.transaction(async () => {
     const { items, id, ...fields } = draft;
     const existing = id ? await store.get("jobOrders", id) : null;
-    const order = await store.upsert("jobOrders", id, { ...fields, code: existing?.code ?? null });
+    const order = await store.upsert("jobOrders", id, { ...fields, code: existing?.code ?? (await nextCode(store, "jobOrders")) });
 
     const keep: string[] = [];
     for (const item of items) {
