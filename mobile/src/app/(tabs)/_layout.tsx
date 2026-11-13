@@ -1,6 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { QuickAddButton } from "@/components/QuickAdd";
 import { useApp } from "@/providers/app";
@@ -11,6 +11,8 @@ export default function TabsLayout() {
   const { isTablet } = useLayout();
   const { top } = useSafeAreaInsets();
   const { syncStatus } = useApp();
+  // With large text, the spaced capitals tighten so a label like "Clients" stays whole.
+  const { fontScale } = useWindowDimensions();
   return (
     <Tabs
       screenOptions={{
@@ -21,7 +23,16 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, minHeight: 64 },
-        tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: 10, letterSpacing: 1.2, textTransform: "uppercase" },
+        tabBarLabel: ({ color, children }) => (
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.75}
+            style={{ color, fontFamily: fonts.bodyMedium, fontSize: 10, letterSpacing: fontScale > 1.2 ? 0.4 : 1.2, textTransform: "uppercase" }}
+          >
+            {children}
+          </Text>
+        ),
         tabBarLabelPosition: isTablet ? "beside-icon" : "below-icon",
         sceneStyle: { backgroundColor: colors.background, paddingTop: top },
       }}
