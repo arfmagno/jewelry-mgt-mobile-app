@@ -269,6 +269,8 @@ export class OrderAssistant {
 
   private pendingClientName: string | null = null;
   private pendingPhone: string | null = null;
+  /** Whether the offered clients match every word of the name, or only some. */
+  private fullMatch = false;
 
   private async read(text: string): Promise<OrderIntent> {
     if (this.opts.interpret) {
@@ -381,6 +383,7 @@ export class OrderAssistant {
     this.pendingClientName = query;
     if (top.length === 1 && best === q.length) return this.useClient(top[0]!);
     if (top.length) {
+      this.fullMatch = best === q.length;
       this.draft.client = null;
       this.draft.clientCandidates = top.slice(0, 4);
       return;
@@ -478,7 +481,9 @@ export class OrderAssistant {
       if (d.clientCandidates.length) {
         return this.ask(
           "pickClient",
-          `Which ${this.pendingClientName ?? "client"} is it?`,
+          this.fullMatch
+            ? `Which ${this.pendingClientName ?? "client"} is it?`
+            : `I don't have a client named ${this.pendingClientName ?? "that"}. Is it one of these, or someone new?`,
           [
             ...d.clientCandidates.map((c) => ({ label: `${c.firstName} ${c.lastName}`, hint: formatPhPhone(c.phone), value: `client:${c.id}` })),
             { label: `New client: ${this.pendingClientName ?? ""}`.trim(), value: "client:new" },
