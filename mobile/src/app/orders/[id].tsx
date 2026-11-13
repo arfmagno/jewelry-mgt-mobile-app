@@ -10,6 +10,7 @@ import { Card, Columns, Detail, EmptyState, ListRow, Loading, Screen, Section, T
 import { Text } from "@/components/Text";
 import { PaymentForm } from "@/features/orders/PaymentForm";
 import { shareReceipt } from "@/features/orders/receipt";
+import { ReminderField } from "@/features/orders/ReminderField";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { fullName, percent } from "@/lib/format";
 import { useStore } from "@/providers/app";
@@ -134,6 +135,7 @@ export default function OrderDetailScreen() {
               />
             ))
           )}
+          {totals.balance > 0 ? <ReminderField orderId={order.id} code={title} client={fullName(d.client)} balance={totals.balance} /> : null}
         </Section>
 
         {order.notes ? (
