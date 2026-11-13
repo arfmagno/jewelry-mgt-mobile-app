@@ -17,7 +17,7 @@ type Props = {
   onChange: (costs: CostForm[]) => void;
 };
 
-/** Cost lines: materials (from suppliers) and services/labour (by a named worker). */
+/** Cost lines: metal and other materials (from suppliers) and flat-fee work. */
 export function CostsEditor({ costs, suppliers, materials, errors, onChange }: Props) {
   const store = useStore();
   const update = (key: string, patch: Partial<CostForm>) => onChange(costs.map((c) => (c.key === key ? { ...c, ...patch } : c)));
@@ -51,13 +51,11 @@ export function CostsEditor({ costs, suppliers, materials, errors, onChange }: P
               options={optionsOf(COST_CATEGORIES)}
               value={c.category}
               onChange={(category) =>
-                category && update(c.key, isServiceCost(category) ? { category, materialId: null, supplierId: null } : { category, workerName: "" })
+                category && update(c.key, isServiceCost(category) ? { category, materialId: null, supplierId: null } : { category })
               }
             />
             <TextField label="Description" placeholder={service ? "e.g. Rhodium plating" : "e.g. 18K casting grain"} value={c.description} onChangeText={(description) => update(c.key, { description })} maxLength={200} />
-            {service ? (
-              <TextField label="Done by" hint="Name of the worker or shop" value={c.workerName} onChangeText={(workerName) => update(c.key, { workerName })} maxLength={80} />
-            ) : (
+            {service ? null : (
               <Columns>
                 <SelectField label="Supplier" options={suppliers} value={c.supplierId} allowClear onChange={(supplierId) => update(c.key, { supplierId })} />
                 {materials ? (
@@ -93,7 +91,7 @@ export function CostsEditor({ costs, suppliers, materials, errors, onChange }: P
       })}
       <Columns>
         <Button label="Add material cost" icon="add" variant="secondary" onPress={() => onChange([...costs, emptyCost("metal")])} />
-        <Button label="Add labour or service" icon="add" variant="secondary" onPress={() => onChange([...costs, emptyCost("casting")])} />
+        <Button label="Add labour or service" icon="add" variant="secondary" onPress={() => onChange([...costs, emptyCost("labor")])} />
       </Columns>
     </View>
   );

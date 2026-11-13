@@ -146,7 +146,6 @@ export const fieldSchemas = {
     category: e(COST_CATEGORIES),
     description: optText(200),
     supplierId: optRef,
-    workerName: optText(80),
     materialId: optRef,
     quantity: measure.positive(),
     unitCost: money,

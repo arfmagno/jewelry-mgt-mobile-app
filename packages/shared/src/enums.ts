@@ -200,50 +200,21 @@ export const STONE_SETTINGS = options(
   },
 );
 
-export const MATERIAL_COST_CATEGORIES = ["metal", "stone", "finding", "chain", "other_material"] as const;
-export const SERVICE_COST_CATEGORIES = [
-  "design_cad",
-  "casting",
-  "fabrication",
-  "soldering",
-  "stone_setting",
-  "polishing",
-  "plating",
-  "engraving",
-  "enameling",
-  "resizing_repair",
-  "certification",
-  "packaging",
-  "other_service",
-] as const;
-
-export const COST_CATEGORIES = options(
-  [...MATERIAL_COST_CATEGORIES, ...SERVICE_COST_CATEGORIES] as const,
-  {
-    metal: "Metal",
-    stone: "Stones",
-    finding: "Findings (clasps, backs, jump rings)",
-    chain: "Ready-made chain",
-    other_material: "Other material",
-    design_cad: "Design / 3D model / wax",
-    casting: "Casting",
-    fabrication: "Fabrication (goldsmith work)",
-    soldering: "Soldering / laser welding",
-    stone_setting: "Stone setting",
-    polishing: "Polishing / finishing",
-    plating: "Plating (tubog)",
-    engraving: "Engraving",
-    enameling: "Enameling",
-    resizing_repair: "Resizing / repair",
-    certification: "Certification / appraisal",
-    packaging: "Packaging",
-    other_service: "Other service",
-  },
-);
+/**
+ * Piece costs besides stones (which carry their own price). Metal is bought by
+ * weight; labour, plating and engraving are flat fees; anything else is "other".
+ */
+export const COST_CATEGORIES = options(["metal", "labor", "plating", "engraving", "other"] as const, {
+  metal: "Metal",
+  labor: "Labor",
+  plating: "Plating (tubog)",
+  engraving: "Engraving",
+  other: "Other",
+});
 
 export type CostCategory = (typeof COST_CATEGORIES.values)[number];
-export const isServiceCost = (c: CostCategory) =>
-  (SERVICE_COST_CATEGORIES as readonly string[]).includes(c);
+/** Flat-fee work, as opposed to materials bought by quantity. */
+export const isServiceCost = (c: CostCategory) => c === "labor" || c === "plating" || c === "engraving";
 
 export const MATERIAL_KINDS = options(["metal", "stone", "finding", "chain", "other"] as const, {
   metal: "Metal",

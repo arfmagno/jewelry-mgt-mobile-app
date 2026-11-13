@@ -10,7 +10,7 @@ describe("jewelry form", () => {
     f.weightG = "3.25";
     f.components[0] = { ...emptyComponent("ring"), ringSize: "7", widthMm: "2" };
     f.components.push({ ...emptyComponent("chain"), length: "18", style: "cable" });
-    f.costs = [{ ...emptyCost("casting"), unitCost: "1,250.50", workerName: "Mang Jun" }];
+    f.costs = [{ ...emptyCost("labor"), unitCost: "1,250.50", description: "Setting" }];
 
     const d = toDraft(f, units);
     expect(d.weightG).toBe(3.25);
@@ -19,7 +19,7 @@ describe("jewelry form", () => {
     expect(d.components[1]!.lengthMm).toBeCloseTo(457.2, 1);
     expect(d.components[1]!.ringSizeMm).toBeNull();
     expect(d.costs[0]!.unitCost).toBe(125050);
-    expect(d.costs[0]!.workerName).toBe("Mang Jun");
+    expect(d.costs[0]!.description).toBe("Setting");
   });
 
   it("drops measurements that do not apply to the part type", () => {

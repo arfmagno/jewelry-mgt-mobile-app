@@ -137,7 +137,7 @@ export default function JewelryDetailScreen() {
                 title={c.description || COST_CATEGORIES.labels[c.category]}
                 subtitle={[
                   COST_CATEGORIES.labels[c.category],
-                  c.supplierName ?? c.workerName,
+                  c.supplierName,
                   c.quantity !== 1 ? `${trim(c.quantity, 3)} × ${formatMoney(c.unitCost)}` : null,
                 ]
                   .filter(Boolean)

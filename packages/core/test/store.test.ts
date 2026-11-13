@@ -2,7 +2,7 @@ import { fieldNames, metaSchema, TABLES } from "@jewelry/shared";
 import { describe, expect, it, vi } from "vitest";
 import { LOCAL_ONLY_COLUMNS } from "../src/schema";
 import { clientInput, memoryDb, testStore } from "./helpers";
-import { migrate } from "../src/schema";
+import { migrate, MIGRATIONS } from "../src/schema";
 
 describe("local schema", () => {
   it("has exactly the columns defined by the shared record schemas", async () => {
@@ -23,7 +23,7 @@ describe("local schema", () => {
     const db = await memoryDb();
     await migrate(db);
     await migrate(db);
-    expect((await db.first<{ user_version: number }>("PRAGMA user_version"))?.user_version).toBe(1);
+    expect((await db.first<{ user_version: number }>("PRAGMA user_version"))?.user_version).toBe(MIGRATIONS.length);
   });
 });
 

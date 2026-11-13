@@ -64,7 +64,6 @@ export type CostForm = {
   category: CostCategory;
   description: string;
   supplierId: string | null;
-  workerName: string;
   materialId: string | null;
   quantity: string;
   unitCost: string;
@@ -131,7 +130,6 @@ export const emptyCost = (category: CostCategory = "metal"): CostForm => ({
   category,
   description: "",
   supplierId: null,
-  workerName: "",
   materialId: null,
   quantity: "1",
   unitCost: "",
@@ -220,7 +218,6 @@ export function toDraft(f: PieceForm, units: Units): JewelryDraft {
       category: c.category,
       description: orNull(c.description),
       supplierId: c.supplierId,
-      workerName: orNull(c.workerName),
       materialId: c.materialId,
       quantity: parseNumber(c.quantity) ?? 0,
       unitCost: parseMoney(c.unitCost) ?? Number.NaN,
@@ -279,7 +276,6 @@ export function fromDetail(d: JewelryDetail, units: Units): PieceForm {
       category: c.category,
       description: c.description ?? "",
       supplierId: c.supplierId,
-      workerName: c.workerName ?? "",
       materialId: c.materialId,
       quantity: numberToInput(c.quantity, 3),
       unitCost: moneyToInput(c.unitCost),

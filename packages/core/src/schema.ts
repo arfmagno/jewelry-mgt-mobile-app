@@ -96,6 +96,10 @@ export const MIGRATIONS: readonly string[] = [
   CREATE TABLE outbox (tableName TEXT NOT NULL, recordId TEXT NOT NULL, PRIMARY KEY (tableName, recordId));
   CREATE TABLE syncState (key TEXT PRIMARY KEY NOT NULL, value TEXT);
   `,
+
+  /* 2 — cost lines no longer record a worker name */ `
+  ALTER TABLE jewelryCosts DROP COLUMN workerName;
+  `,
 ];
 
 /** Columns that exist only on the device and are never sent to the server. */
