@@ -58,7 +58,13 @@ async function applyOne(
     let data = record;
     if (prefix && !record.purgedAt) {
       code = (existing?.data.code as string | null) ?? (record.code as string | null) ?? null;
-      if (!code) code = formatCode(prefix, await deps.repo.nextCode(userId, table));
+      if (!code) {
+        code = formatCode(prefix, await deps.repo.nextCode(userId, table));
+      } else if (!existing?.data.code) {
+        // Numbered on the device: keep the server counter ahead of it.
+        const n = Number(code.slice(prefix.length + 1));
+        if (Number.isInteger(n) && n > 0) await deps.repo.reserveCode(userId, table, n);
+      }
       data = { ...record, code };
     }
 

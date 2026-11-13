@@ -31,6 +31,9 @@ export function memoryRepo(): RecordRepo & { items: Map<string, StoredRecord> } 
       counters.set(`${u}|${t}`, n);
       return n;
     },
+    async reserveCode(u, t, n) {
+      counters.set(`${u}|${t}`, Math.max(counters.get(`${u}|${t}`) ?? 0, n));
+    },
     async changesSince(u, { since, cursor, limit }) {
       const all = [...items.entries()]
         .filter(([k, r]) => k.startsWith(`${u}|`) && (!since || r.serverUpdatedAt > since))

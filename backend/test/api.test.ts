@@ -18,7 +18,7 @@ const client = (id: string, over: Record<string, unknown> = {}) => ({
 
 const order = (id: string) => ({
   table: "jobOrders",
-  record: { ...meta(id), code: null, clientId: "01JC0000000000000000CLNT01", orderDate: "2026-03-01", status: "in_production", notes: null },
+  record: { ...meta(id), code: null as string | null, clientId: "01JC0000000000000000CLNT01", orderDate: "2026-03-01", status: "in_production", notes: null },
 });
 
 describe("API", () => {
@@ -76,6 +76,15 @@ describe("API", () => {
     a.record.updatedAt = "2026-03-03T00:00:00.000Z";
     const again = await call<PushResponse>(handler, event("POST", "/sync/push", { body: { records: [a] } }));
     expect(again.body.results[0]!.code).toBe("JO-00001");
+  });
+
+  it("keeps codes numbered on the device and never issues them again", async () => {
+    const { handler } = testHandler();
+    const numbered = order("01JC0000000000000000ORDR01");
+    numbered.record.code = "JO-00007";
+    const unnumbered = order("01JC0000000000000000ORDR02");
+    const res = await call<PushResponse>(handler, event("POST", "/sync/push", { body: { records: [numbered, unnumbered] } }));
+    expect(res.body.results.map((r) => r.code)).toEqual(["JO-00007", "JO-00008"]);
   });
 
   it("treats tombstones as final and deletes purged photos", async () => {

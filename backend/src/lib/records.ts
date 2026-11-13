@@ -27,6 +27,8 @@ export interface RecordRepo {
   /** Conditional write: fails (returns false) if the record changed since `expectedServerUpdatedAt`. */
   put(userId: string, rec: StoredRecord, expectedServerUpdatedAt: string | null): Promise<boolean>;
   nextCode(userId: string, table: TableName): Promise<number>;
+  /** Moves the counter to at least `n`, so codes numbered on a device are never issued again. */
+  reserveCode(userId: string, table: TableName, n: number): Promise<void>;
   changesSince(
     userId: string,
     opts: { since?: string; cursor?: string; limit: number },
@@ -94,6 +96,24 @@ export function createDynamoRepo(tableName: string, client?: DynamoDBDocumentCli
         }),
       );
       return Number(res.Attributes?.n);
+    },
+
+    async reserveCode(userId, table, n) {
+      try {
+        await ddb.send(
+          new UpdateCommand({
+            TableName: tableName,
+            Key: { PK: pk(userId), SK: `COUNTER#${table}` },
+            UpdateExpression: "SET n = :n",
+            ConditionExpression: "attribute_not_exists(n) OR n < :n",
+            ExpressionAttributeValues: { ":n": n },
+          }),
+        );
+      } catch (e) {
+        // Already at or past n: nothing to do.
+        if (e instanceof ConditionalCheckFailedException || (e as { name?: string }).name === "ConditionalCheckFailedException") return;
+        throw e;
+      }
     },
 
     async changesSince(userId, { since, cursor, limit }) {
