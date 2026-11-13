@@ -322,6 +322,23 @@ export async function orderMonths(store: Store, f: { status?: JobOrder["status"]
   );
 }
 
+export type OrderYear = { year: string; orders: number; selling: number; balance: number };
+
+/** Years that have orders (optionally of one status), newest first, with totals for browsing by year. */
+export async function orderYears(store: Store, f: { status?: JobOrder["status"] } = {}): Promise<OrderYear[]> {
+  const months = await orderMonths(store, f);
+  const years = new Map<string, OrderYear>();
+  for (const m of months) {
+    const year = m.month.slice(0, 4);
+    const y = years.get(year) ?? { year, orders: 0, selling: 0, balance: 0 };
+    y.orders += m.orders;
+    y.selling += m.selling;
+    y.balance += m.balance;
+    years.set(year, y);
+  }
+  return [...years.values()];
+}
+
 /** Number of orders in each status. */
 export async function orderCounts(store: Store): Promise<Record<JobOrder["status"], number>> {
   const rows = await store.query<{ status: JobOrder["status"]; n: number }>(
@@ -345,6 +362,8 @@ export async function listOrders(
     clientId?: string;
     /** Orders dated in this month (YYYY-MM). */
     month?: string;
+    /** Orders dated in this year (YYYY). */
+    year?: string;
     /** Only orders with a balance still to collect. */
     unpaid?: boolean;
   } = {},
@@ -354,6 +373,10 @@ export async function listOrders(
   if (f.month) {
     where += " AND substr(o.orderDate, 1, 7) = ?";
     params.push(f.month);
+  }
+  if (f.year) {
+    where += " AND substr(o.orderDate, 1, 4) = ?";
+    params.push(f.year);
   }
   if (f.unpaid) where += ` AND ${ORDER_SELLING} > ${ORDER_PAID}`;
   if (f.status) {

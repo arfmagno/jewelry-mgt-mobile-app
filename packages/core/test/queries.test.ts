@@ -10,6 +10,7 @@ import {
   monthlySummary,
   orderCounts,
   orderMonths,
+  orderYears,
   stockOnHand,
 } from "../src/queries";
 import { clientInput, ringDraft, testStore } from "./helpers";
@@ -222,5 +223,24 @@ describe("browsing orders", () => {
     await store.update("jobOrders", marchPaid, { status: "completed" });
     expect(await orderCounts(store)).toEqual({ in_production: 2, completed: 1 });
     expect(await orderMonths(store, { status: "completed" })).toEqual([{ month: "2026-03", orders: 1, selling: 100_000, balance: 0 }]);
+  });
+
+  it("filters by year and summarises each year", async () => {
+    const { store } = await testStore();
+    const clientId = (await store.insert("clients", clientInput())).id;
+    const order = async (date: string, price: number) => {
+      const pieceId = await saveJewelry(store, ringDraft());
+      return saveJobOrder(store, { clientId, orderDate: date, status: "completed", notes: null, items: [{ jewelryId: pieceId, sellingPrice: price }] });
+    };
+    const late = await order("2025-12-30", 100_000);
+    const early = await order("2026-01-02", 200_000);
+    const spring = await order("2026-04-10", 300_000);
+
+    expect((await listOrders(store, { year: "2026" })).map((o) => o.id)).toEqual([spring, early]);
+    expect((await listOrders(store, { year: "2025" })).map((o) => o.id)).toEqual([late]);
+    expect(await orderYears(store, { status: "completed" })).toEqual([
+      { year: "2026", orders: 2, selling: 500_000, balance: 500_000 },
+      { year: "2025", orders: 1, selling: 100_000, balance: 100_000 },
+    ]);
   });
 });
