@@ -1,5 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import type { OrderMonth } from "@jewelry/core";
+import type { OrderMonth, OrderYear } from "@jewelry/core";
 import { useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -112,6 +112,22 @@ export function MonthNavigator({
           </ScrollView>
         </SafeAreaView>
       </Modal>
+    </View>
+  );
+}
+
+/** Previous / next year, between the first year with orders and this year. */
+export function YearNavigator({ year, years, onChange }: { year: string; years: OrderYear[]; onChange: (year: string) => void }) {
+  const earliest = years.at(-1)?.year ?? year;
+  const latest = [years[0]?.year ?? year, thisMonth().slice(0, 4)].sort().at(-1)!;
+  const step = (by: number) => onChange(String(Number(year) + by));
+  return (
+    <View style={styles.row}>
+      <IconButton icon="chevron-back" label="Previous year" disabled={year <= earliest} onPress={() => step(-1)} />
+      <View style={styles.title} accessible accessibilityRole="header" accessibilityLabel={year}>
+        <Text variant="title">{year}</Text>
+      </View>
+      <IconButton icon="chevron-forward" label="Next year" disabled={year >= latest} onPress={() => step(1)} />
     </View>
   );
 }

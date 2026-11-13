@@ -1,14 +1,15 @@
-import { listOrders, orderCounts, orderMonths, type OrderSummary } from "@jewelry/core";
+import { listOrders, orderCounts, orderMonths, orderYears, type OrderSummary } from "@jewelry/core";
 import { formatMoney, ORDER_STATUSES, type JobOrder } from "@jewelry/shared";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
-import { FlatList, Pressable, SectionList, StyleSheet, useWindowDimensions, View } from "react-native";
+import { useCallback, useState } from "react";
+import { Pressable, SectionList, StyleSheet, View } from "react-native";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/fields";
 import { ListToolbar } from "@/components/ListToolbar";
 import { EmptyState } from "@/components/layout";
+import { TabSwipe, type SwipeDirection } from "@/components/TabSwipe";
 import { Text } from "@/components/Text";
-import { monthLabel, MonthNavigator, thisMonth } from "@/features/orders/MonthNavigator";
+import { monthLabel, MonthNavigator, thisMonth, YearNavigator } from "@/features/orders/MonthNavigator";
 import { OrderRow } from "@/features/orders/OrderRow";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { MAX_CONTENT_WIDTH, TOUCH_TARGET, useLayout, useTheme } from "@/theme";
@@ -34,116 +35,151 @@ function group(orders: OrderSummary[], by: "day" | "month") {
 
 export default function OrdersScreen() {
   const router = useRouter();
-  const { colors, reduceMotion } = useTheme();
+  const { colors } = useTheme();
   const { gutter } = useLayout();
-  const { width } = useWindowDimensions();
-  const pager = useRef<FlatList<Status>>(null);
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [unpaid, setUnpaid] = useState(false);
   const { data: counts } = useLiveQuery((s) => orderCounts(s), []);
 
-  const showPage = (i: number) => {
-    setPage(i);
-    pager.current?.scrollToIndex({ index: i, animated: !reduceMotion });
-  };
+  // A sideways swipe moves between In production and Completed before leaving the tab.
+  const onSwipe = useCallback(
+    (dir: SwipeDirection) => {
+      const to = page + (dir === "next" ? 1 : -1);
+      if (to < 0 || to >= PAGES.length) return false;
+      setPage(to);
+      return true;
+    },
+    [page],
+  );
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ paddingHorizontal: gutter, paddingTop: 8, gap: 8, width: "100%", maxWidth: MAX_CONTENT_WIDTH, alignSelf: "center" }}>
-        <ListToolbar
-          summary={unpaid ? "Orders with a balance to collect" : "All orders"}
-          actions={[
-            {
-              icon: "search",
-              label: searchOpen ? "Close search" : "Search orders",
-              active: searchOpen,
-              testID: "toggle-order-search",
-              onPress: () => {
-                if (searchOpen) setSearch("");
-                setSearchOpen(!searchOpen);
+    <TabSwipe tab="orders" onSwipe={onSwipe}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={{ paddingHorizontal: gutter, paddingTop: 8, gap: 8, width: "100%", maxWidth: MAX_CONTENT_WIDTH, alignSelf: "center" }}>
+          <ListToolbar
+            summary={unpaid ? "Orders with a balance to collect" : "All orders"}
+            actions={[
+              {
+                icon: "search",
+                label: searchOpen ? "Close search" : "Search orders",
+                active: searchOpen,
+                testID: "toggle-order-search",
+                onPress: () => {
+                  if (searchOpen) setSearch("");
+                  setSearchOpen(!searchOpen);
+                },
               },
-            },
-            {
-              icon: "cash-outline",
-              label: unpaid ? "Show all orders" : "Show only orders to collect",
-              active: unpaid,
-              testID: "toggle-unpaid",
-              onPress: () => setUnpaid(!unpaid),
-            },
-          ]}
-        />
-        {searchOpen ? (
-          <TextField label="Search orders" value={search} onChangeText={setSearch} placeholder="Code or client name" autoCorrect={false} autoFocus />
-        ) : null}
-        <View accessibilityRole="tablist" style={[styles.tabs, { borderColor: colors.divider }]}>
-          {PAGES.map((status, i) => {
-            const selected = page === i;
-            return (
-              <Pressable
-                key={status}
-                testID={`orders-tab-${status}`}
-                accessibilityRole="tab"
-                accessibilityState={{ selected }}
-                accessibilityLabel={`${ORDER_STATUSES.labels[status]}, ${counts?.[status] ?? 0} orders`}
-                onPress={() => showPage(i)}
-                style={[styles.tab, { borderColor: selected ? colors.accent : "transparent" }]}
-              >
-                <Text variant="label" color={selected ? colors.text : colors.textMuted}>
-                  {ORDER_STATUSES.labels[status]}
-                  {counts ? ` · ${counts[status]}` : ""}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
-
-      <FlatList
-        ref={pager}
-        data={PAGES}
-        keyExtractor={(s) => s}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
-        onMomentumScrollEnd={(e) => setPage(Math.round(e.nativeEvent.contentOffset.x / width))}
-        renderItem={({ item }) => (
-          <View style={{ width }}>
-            <OrdersPage status={item} search={search} unpaid={unpaid} onOpen={(id) => router.push(`/orders/${id}`)} />
+              {
+                icon: "cash-outline",
+                label: unpaid ? "Show all orders" : "Show only orders to collect",
+                active: unpaid,
+                testID: "toggle-unpaid",
+                onPress: () => setUnpaid(!unpaid),
+              },
+            ]}
+          />
+          {searchOpen ? (
+            <TextField label="Search orders" value={search} onChangeText={setSearch} placeholder="Code or client name" autoCorrect={false} autoFocus />
+          ) : null}
+          <View accessibilityRole="tablist" style={[styles.tabs, { borderColor: colors.divider }]}>
+            {PAGES.map((status, i) => {
+              const selected = page === i;
+              return (
+                <Pressable
+                  key={status}
+                  testID={`orders-tab-${status}`}
+                  accessibilityRole="tab"
+                  accessibilityState={{ selected }}
+                  accessibilityLabel={`${ORDER_STATUSES.labels[status]}, ${counts?.[status] ?? 0} orders`}
+                  onPress={() => setPage(i)}
+                  style={[styles.tab, { borderColor: selected ? colors.accent : "transparent" }]}
+                >
+                  <Text variant="label" color={selected ? colors.text : colors.textMuted}>
+                    {ORDER_STATUSES.labels[status]}
+                    {counts ? ` · ${counts[status]}` : ""}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
-        )}
-      />
-    </View>
+        </View>
+
+        {PAGES.map((status, i) => (
+          // Both stay mounted so each keeps its month and scroll position.
+          <View key={status} style={{ flex: 1, display: page === i ? "flex" : "none" }}>
+            <OrdersPage status={status} search={search} unpaid={unpaid} onOpen={(id) => router.push(`/orders/${id}`)} />
+          </View>
+        ))}
+      </View>
+    </TabSwipe>
   );
 }
 
-/** One status: in-production orders all together; completed orders a month at a time. */
+type Period = "month" | "year";
+
+/** One status: in-production orders all together; completed orders a month or a year at a time. */
 function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search: string; unpaid: boolean; onOpen: (id: string) => void }) {
   const { colors, radius } = useTheme();
   const { gutter } = useLayout();
+  const [period, setPeriod] = useState<Period>("month");
   const [chosenMonth, setChosenMonth] = useState<string | null>(null);
+  const [chosenYear, setChosenYear] = useState<string | null>(null);
   const [limit, setLimit] = useState(PAGE_SIZE);
   const searching = search.trim() !== "";
-  const byMonth = status === "completed" && !searching;
+  const browsing = status === "completed" && !searching;
 
   const { data: months } = useLiveQuery((s) => orderMonths(s, { status }), [status]);
-  // Until a month is chosen, open on the newest month with orders.
+  const { data: years } = useLiveQuery((s) => orderYears(s, { status }), [status]);
+  // Until one is chosen, open on the newest month or year with orders.
   const month = chosenMonth ?? months?.[0]?.month ?? thisMonth();
+  const year = chosenYear ?? years?.[0]?.year ?? thisMonth().slice(0, 4);
+  const filter = !browsing ? {} : period === "month" ? { month } : { year };
   const { data, loading } = useLiveQuery(
-    (s) => listOrders(s, { search, status, unpaid, month: byMonth ? month : undefined, limit }),
-    [search, status, unpaid, byMonth, month, limit],
+    (s) => listOrders(s, { search, status, unpaid, ...filter, limit }),
+    [search, status, unpaid, browsing, period, month, year, limit],
   );
-  const summary = months?.find((m) => m.month === month);
-  const pickMonth = (m: string) => {
-    setChosenMonth(m);
+  const summary = period === "month" ? months?.find((m) => m.month === month) : years?.find((y) => y.year === year);
+  const latest = period === "month" ? months?.[0]?.month : years?.[0]?.year;
+  const shown = period === "month" ? month : year;
+  const shownLabel = period === "month" ? monthLabel(month) : year;
+  const show = (value: string) => {
+    if (period === "month") setChosenMonth(value);
+    else setChosenYear(value);
     setLimit(PAGE_SIZE);
   };
 
-  const header = byMonth ? (
+  const header = browsing ? (
     <View style={{ gap: 12, paddingBottom: 4 }}>
-      <MonthNavigator month={month} months={months ?? []} onChange={pickMonth} />
+      <View accessibilityRole="radiogroup" accessibilityLabel="Browse by" style={[styles.segments, { borderColor: colors.divider, borderRadius: radius.pill }]}>
+        {(["month", "year"] as const).map((p) => {
+          const on = period === p;
+          return (
+            <Pressable
+              key={p}
+              testID={`orders-by-${p}`}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: on }}
+              accessibilityLabel={p === "month" ? "By month" : "By year"}
+              onPress={() => {
+                setPeriod(p);
+                setLimit(PAGE_SIZE);
+              }}
+              style={[styles.segment, { borderRadius: radius.pill, backgroundColor: on ? colors.text : "transparent" }]}
+            >
+              <Text variant="eyebrow" color={on ? colors.background : colors.textMuted}>
+                {p === "month" ? "Month" : "Year"}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      {period === "month" ? (
+        <MonthNavigator month={month} months={months ?? []} onChange={show} />
+      ) : (
+        <YearNavigator year={year} years={years ?? []} onChange={show} />
+      )}
       <View style={{ flexDirection: "row", gap: 8 }}>
         {[
           ["Orders", String(summary?.orders ?? 0)],
@@ -154,12 +190,12 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
             key={label}
             accessible
             accessibilityLabel={`${label}: ${value}`}
-            style={{ flex: 1, padding: 12, gap: 2, borderRadius: radius.md, backgroundColor: colors.accentSoft }}
+            style={{ flex: 1, padding: 12, gap: 4, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold[1], backgroundColor: colors.surface }}
           >
-            <Text variant="caption" muted>
+            <Text variant="eyebrow" muted>
               {label}
             </Text>
-            <Text variant="money" style={{ fontSize: 15 }}>
+            <Text variant="money" style={{ fontSize: 17 }} numberOfLines={1} adjustsFontSizeToFit>
               {value}
             </Text>
           </View>
@@ -171,7 +207,7 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
   return (
     <SectionList
       testID={`order-list-${status}`}
-      sections={group(data ?? [], byMonth ? "day" : "month")}
+      sections={group(data ?? [], browsing && period === "month" ? "day" : "month")}
       keyExtractor={(o) => o.id}
       keyboardShouldPersistTaps="handled"
       stickySectionHeadersEnabled
@@ -198,15 +234,15 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
             title={
               searching
                 ? "No matching orders"
-                : byMonth && months?.length
-                  ? `No completed orders in ${monthLabel(month)}`
+                : browsing && latest
+                  ? `No completed orders in ${shownLabel}`
                   : status === "in_production"
                     ? "Nothing in production"
                     : "No completed orders yet"
             }
             action={
-              byMonth && months?.length && month !== months[0]!.month ? (
-                <Button label={`Go to ${monthLabel(months[0]!.month)}`} variant="secondary" onPress={() => pickMonth(months[0]!.month)} />
+              browsing && latest && shown !== latest ? (
+                <Button label={`Go to ${period === "month" ? monthLabel(latest) : latest}`} variant="secondary" onPress={() => show(latest)} />
               ) : undefined
             }
           />
@@ -219,4 +255,6 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
 const styles = StyleSheet.create({
   tabs: { flexDirection: "row", borderBottomWidth: StyleSheet.hairlineWidth },
   tab: { flex: 1, minHeight: TOUCH_TARGET, alignItems: "center", justifyContent: "center", borderBottomWidth: 3 },
+  segments: { flexDirection: "row", alignSelf: "center", borderWidth: StyleSheet.hairlineWidth, padding: 3 },
+  segment: { minHeight: 44, minWidth: 96, paddingHorizontal: 16, alignItems: "center", justifyContent: "center" },
 });
