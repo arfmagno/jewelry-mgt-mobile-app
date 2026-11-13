@@ -19,6 +19,8 @@ The light theme uses a deeper antique gold, because bright gold on ivory fails c
 
 - **Type**: Cormorant Garamond for headings, Inter for body, labels and figures. Figures use tabular numerals.
 - **Spacing**: 4 / 8 / 12 / 16 / 24 / 32. Radii are 6 / 10 / 16.
+- **Illustrations**: line drawings of each jewelry type, stone cut, and polished-metal swatches (`components/illustrations.tsx`) drive the pickers. They are decorative; every one sits next to its name in text.
+- **Guided entry**: adding a piece is split into short steps (type, metal, sizes, stones, costs, finish) with a progress bar, and the running cost is always visible on the costs step.
 
 Tokens live in `mobile/src/theme/tokens.ts`. Components never hard-code colours.
 
@@ -30,7 +32,7 @@ Tokens live in `mobile/src/theme/tokens.ts`. Components never hard-code colours.
 | Target size (2.5.8) | Every touch target is at least 48 dp (`TOUCH_TARGET`); icon buttons use `hitSlop` |
 | Text resize (1.4.4) | Font scaling always on; layouts wrap instead of truncating; display headings are capped at 1.6× so they stay on screen |
 | Use of colour (1.4.1) | Status pills, sync state and selected chips always carry text or an icon as well as colour |
-| Name, role, value (4.1.2) | Buttons, radios (choice chips), switches and pickers expose role, label and state; icon-only buttons have spoken labels |
+| Name, role, value (4.1.2) | Buttons, radios (choice chips and picture tiles), checkboxes (multi-select tiles), switches, counters and pickers expose role, label and state; icon-only buttons have spoken labels |
 | Labels (3.3.2) | Every input has a visible label, with required fields marked in text and hints below |
 | Error identification (3.3.1) | Field errors appear next to the field as one live, polite alert with an icon and text |
 | Status messages (4.1.3) | Validation summaries and finished AI designs are announced; field errors and the report year use live regions |
