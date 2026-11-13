@@ -272,8 +272,19 @@ export function Thumb({
 }
 
 /** Responsive grid for cards. */
-export function Grid<T>({ items, render, keyOf }: { items: T[]; render: (item: T) => ReactNode; keyOf: (item: T) => string }) {
-  const { columns } = useLayout();
+export function Grid<T>({
+  items,
+  render,
+  keyOf,
+  minColumns = 1,
+}: {
+  items: T[];
+  render: (item: T) => ReactNode;
+  keyOf: (item: T) => string;
+  /** Fewest columns, even on a narrow phone. */
+  minColumns?: number;
+}) {
+  const columns = Math.max(useLayout().columns, minColumns);
   return (
     <View style={styles.grid}>
       {items.map((it) => (
