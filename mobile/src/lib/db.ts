@@ -1,6 +1,7 @@
-import { assignMissingCodes, createUlid, migrate, Store, type SqlDb, type SqlValue } from "@jewelry/core";
+import { assignMissingCodes, createUlid, hasSampleData, migrate, seedSampleData, Store, type SqlDb, type SqlValue } from "@jewelry/core";
 import * as Crypto from "expo-crypto";
 import { openDatabaseAsync, type SQLiteDatabase } from "expo-sqlite";
+import { config } from "@/lib/config";
 
 /** Adapts expo-sqlite to the core `SqlDb` interface. */
 export function sqliteAdapter(db: SQLiteDatabase): SqlDb {
@@ -24,5 +25,6 @@ export async function openStore(name = "jewelry.db"): Promise<Store> {
   await migrate(sql);
   const store = new Store(sql, { newId });
   await assignMissingCodes(store);
+  if (config.demo && !(await hasSampleData(store))) await seedSampleData(store);
   return store;
 }
