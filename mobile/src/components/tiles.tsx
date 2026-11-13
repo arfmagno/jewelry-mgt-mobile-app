@@ -226,7 +226,7 @@ export function CountField({
 
 const styles = StyleSheet.create({
   grid: { flexDirection: "row", flexWrap: "wrap" },
-  tile: { minHeight: TOUCH_TARGET * 2, padding: 12, alignItems: "center", justifyContent: "center", gap: 6 },
+  tile: { minHeight: TOUCH_TARGET * 2, paddingVertical: 12, paddingHorizontal: 6, alignItems: "center", justifyContent: "center", gap: 6 },
   check: {
     position: "absolute",
     top: 8,
