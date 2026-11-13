@@ -22,7 +22,7 @@ The dark theme is a warm espresso rather than pure black, with a soft champagne 
 - **Type**: Cormorant Garamond for headings, piece names, client names and prices (lining figures, so "18K" never reads "ı8K"). Inter for body text and fields. Codes, statuses and list headings are small spaced capitals.
 - **Flat and restrained**: no gradients or shadows. Primary buttons are solid ink with small spaced capitals; secondary buttons are an ink outline. Corners are nearly square.
 - **Gold** is kept to type and fine lines: codes, section labels, hairlines around thumbnails and monograms. The add button in the tab bar is an ink disc with a fine cross; it opens a menu sheet of the records you can add.
-- **Pieces without photos** sit on a softly lit, display-case backdrop with a line drawing of the piece.
+- **Pieces without photos** sit on a plain tinted panel with a line drawing of the piece.
 - **Quiet chrome**: pieces are shown like a catalogue (picture, then name and price, no box). Orders, clients and other lists are open rows divided by hairlines, like a ledger. Detail pages are spec sheets: label on the left, value on the right. A status is a small dot and a word. Screen headers are small capitals; the page carries the large title.
 - **Spacing**: 4 / 8 / 12 / 16 / 24 / 32. Radii are 2 / 4 / 6, so chips, tiles and buttons read as nearly square. Selected chips and tiles are filled or outlined in ink with a check.
 - **Illustrations**: line drawings of each jewelry type, stone cut, and polished-metal swatches (`components/illustrations.tsx`) drive the pickers. They are decorative; every one sits next to its name in text.

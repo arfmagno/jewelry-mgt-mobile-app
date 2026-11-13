@@ -35,8 +35,8 @@ export type Palette = {
   onInk: string;
   /** Decorative gold for hairlines and rings (not for text). */
   gold: string;
-  /** Soft backdrop behind a piece, centre to edge, like a lit display case. */
-  stage: readonly [string, string];
+  /** Flat backdrop behind a piece that has no photo. */
+  stage: string;
 };
 
 export const dark: Palette = {
@@ -60,7 +60,7 @@ export const dark: Palette = {
   ink: "#CDB27A",
   onInk: "#141210",
   gold: "#8C7748",
-  stage: ["#3A352E", "#1D1A17"],
+  stage: "#211E1A",
 };
 
 export const light: Palette = {
@@ -83,7 +83,7 @@ export const light: Palette = {
   ink: "#17150F",
   onInk: "#FAF8F3",
   gold: "#B8933A",
-  stage: ["#FFFFFF", "#F1EBDD"],
+  stage: "#F3EEE4",
 };
 
 export const fonts = {
