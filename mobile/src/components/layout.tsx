@@ -12,6 +12,7 @@ import {
   type ImageStyle,
   type ViewStyle,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { PieceType } from "@jewelry/shared";
 import { useImageSource } from "@/hooks/useImageSource";
 import { MAX_CONTENT_WIDTH, TOUCH_TARGET, useLayout, useTheme } from "@/theme";
@@ -33,6 +34,8 @@ export function Screen({
 }) {
   const { colors, space } = useTheme();
   const { gutter } = useLayout();
+  // Keep footer buttons clear of the system navigation / gesture bar.
+  const { bottom } = useSafeAreaInsets();
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.background }}
@@ -52,7 +55,7 @@ export function Screen({
         <View
           style={[
             styles.footer,
-            { backgroundColor: colors.surface, borderColor: colors.divider, paddingHorizontal: gutter },
+            { backgroundColor: colors.surface, borderColor: colors.divider, paddingHorizontal: gutter, paddingBottom: 12 + bottom },
           ]}
         >
           <View style={[styles.column, { maxWidth: MAX_CONTENT_WIDTH, flexDirection: "row", gap: 12 }]}>{footer}</View>
