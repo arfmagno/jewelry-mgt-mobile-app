@@ -1,4 +1,5 @@
 export * from "./api";
+export * from "./assistant";
 export * from "./domain";
 export * from "./enums";
 export * from "./money";

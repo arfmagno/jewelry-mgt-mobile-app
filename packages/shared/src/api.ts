@@ -9,6 +9,7 @@ import { isTableName, type TableName } from "./records";
  *  POST /uploads          presigned PUT for a jewelry photo
  *  POST /images/urls      presigned GETs for stored photos
  *  POST /designs/generate AI design image from a description
+ *  POST /assistant/order  read a message describing an order (see assistant.ts)
  */
 
 export const MAX_PUSH_BATCH = 100;
