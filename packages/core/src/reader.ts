@@ -98,16 +98,17 @@ function readPiece(text: string, typeMatch: RegExpMatchArray): OrderIntentPiece 
 }
 
 function readName(text: string): string | null {
-  const name = "([A-ZÑ][a-zñ]+(?:\\s+(?:de|del|dela|de la|delos|san|sta\\.?|[A-ZÑ][a-zñ.'-]+)){1,3})";
+  const words = (min: number) => `([A-ZÑ][a-zñ]+(?:\\s+(?:de|del|dela|de la|delos|san|sta\\.?|[A-ZÑ][a-zñ.'-]+)){${min},3})`;
+  // Two words when the name opens the message; after "for" or "client" one is enough.
+  const name = words(1);
   const patterns = [
     new RegExp(`^\\s*${name}\\s+(?:wants|would|needs|ordered|orders|is ordering|asked|gusto|wants to)\\b`),
-    new RegExp(`\\b(?:[Cc]lient|[Cc]ustomer|[Ff]or|[Pp]ara kay|[Pp]ara sa|[Kk]ay|[Ss]i|[Ff]rom)\\s+${name}`),
+    new RegExp(`\\b(?:[Cc]lient|[Cc]ustomer|[Ff]or|[Pp]ara kay|[Pp]ara sa|[Kk]ay|[Ss]i|[Ff]rom)\\s+${words(0)}`),
     new RegExp(`^\\s*${name}\\s*[,:-]`),
   ];
   for (const p of patterns) {
     const m = p.exec(text);
-    if (m?.[1] && !TYPE_WORD.test(m[1])) return m[1].trim();
-    TYPE_WORD.lastIndex = 0;
+    if (m?.[1] && !new RegExp(TYPE_WORD.source, "i").test(m[1])) return m[1].trim();
   }
   return null;
 }
