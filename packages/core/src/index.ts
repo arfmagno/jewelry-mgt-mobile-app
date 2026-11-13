@@ -1,6 +1,8 @@
 export * from "./aggregates";
+export * from "./assistant";
 export * from "./lifecycle";
 export * from "./queries";
+export * from "./reader";
 export * from "./sample";
 export { migrate, MIGRATIONS } from "./schema";
 export * from "./sqldb";
