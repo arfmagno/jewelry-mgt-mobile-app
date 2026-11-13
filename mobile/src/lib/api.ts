@@ -4,6 +4,8 @@ import type {
   GenerateDesignRequest,
   GenerateDesignResponse,
   ImageUrlsResponse,
+  InterpretOrderRequest,
+  InterpretOrderResponse,
   PullResponse,
   PushRequest,
   PushResponse,
@@ -26,6 +28,7 @@ export type ApiClient = SyncTransport &
   UploadTransport & {
     imageUrls(keys: string[]): Promise<ImageUrlsResponse>;
     generateDesign(body: GenerateDesignRequest): Promise<GenerateDesignResponse>;
+    interpretOrder(body: InterpretOrderRequest): Promise<InterpretOrderResponse>;
   };
 
 type Deps = {
@@ -85,5 +88,6 @@ export function createApiClient({ baseUrl, getToken, fetchImpl = fetch, putFile 
     putFile,
     imageUrls: (keys) => request<ImageUrlsResponse>("POST", "/images/urls", { keys }),
     generateDesign: (body) => request<GenerateDesignResponse>("POST", "/designs/generate", body),
+    interpretOrder: (body) => request<InterpretOrderResponse>("POST", "/assistant/order", body),
   };
 }
