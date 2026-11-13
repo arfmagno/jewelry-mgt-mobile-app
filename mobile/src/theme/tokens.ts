@@ -5,7 +5,8 @@
  *
  * Every text/background pair below meets WCAG 2.2 AA (4.5:1 for text, 3:1 for
  * borders and focus indicators). The light palette uses a deeper "antique" gold
- * because bright gold on ivory would fail contrast.
+ * because bright gold on ivory would fail contrast. Filled gold surfaces use
+ * the metallic `gold` gradient with dark ink, which passes on every stop.
  */
 
 export type Palette = {
@@ -26,6 +27,12 @@ export type Palette = {
   warning: string;
   focus: string;
   scrim: string;
+  /** Metallic gold, light to dark, for filled gold surfaces. */
+  gold: readonly [string, string, string];
+  /** Text/icon colour on `gold` (dark ink on gold reads as engraved). */
+  onGold: string;
+  /** Soft backdrop behind a piece, centre to edge, like a lit display case. */
+  stage: readonly [string, string];
 };
 
 export const dark: Palette = {
@@ -45,6 +52,9 @@ export const dark: Palette = {
   warning: "#F2C46D",
   focus: "#F4D77A",
   scrim: "rgba(0,0,0,0.6)",
+  gold: ["#F1D88A", "#D4AF37", "#9C7A22"],
+  onGold: "#0E0D0B",
+  stage: ["#2E281D", "#14120E"],
 };
 
 export const light: Palette = {
@@ -64,6 +74,9 @@ export const light: Palette = {
   warning: "#8A5A00",
   focus: "#7A5C14",
   scrim: "rgba(28,26,22,0.45)",
+  gold: ["#E9CF86", "#C9A445", "#A8842B"],
+  onGold: "#1C1A16",
+  stage: ["#FFFDF8", "#EFE6D2"],
 };
 
 export const fonts = {
