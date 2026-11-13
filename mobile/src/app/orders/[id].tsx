@@ -11,6 +11,7 @@ import { Text } from "@/components/Text";
 import { PaymentForm } from "@/features/orders/PaymentForm";
 import { shareReceipt } from "@/features/orders/receipt";
 import { ReminderField } from "@/features/orders/ReminderField";
+import { remindersSupported } from "@/lib/reminders";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { fullName, percent } from "@/lib/format";
 import { useStore } from "@/providers/app";
@@ -135,7 +136,7 @@ export default function OrderDetailScreen() {
               />
             ))
           )}
-          {totals.balance > 0 ? <ReminderField orderId={order.id} code={title} client={fullName(d.client)} balance={totals.balance} /> : null}
+          {totals.balance > 0 && remindersSupported ? <ReminderField orderId={order.id} code={title} client={fullName(d.client)} balance={totals.balance} /> : null}
         </Section>
 
         {order.notes ? (

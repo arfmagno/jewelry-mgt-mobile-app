@@ -18,9 +18,14 @@ const key = (orderId: string) => `reminder.${orderId}`;
 /** Reminders arrive at 9 in the morning. */
 const HOUR = 9;
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
-});
+/** Scheduled notifications need the phone; the web demo has none. */
+export const remindersSupported = Platform.OS !== "web";
+
+if (remindersSupported) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
+  });
+}
 
 export function getReminder(orderId: string): Reminder | null {
   try {
@@ -74,6 +79,7 @@ function getReminderRaw(orderId: string): Reminder | null {
 export function useReminderLinks() {
   const router = useRouter();
   useEffect(() => {
+    if (!remindersSupported) return;
     const open = (r: Notifications.NotificationResponse | null) => {
       const url = r?.notification.request.content.data?.url;
       if (typeof url === "string" && url.startsWith("/orders/")) router.push(url as Href);
