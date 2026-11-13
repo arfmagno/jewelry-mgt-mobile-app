@@ -9,28 +9,29 @@ const options = <const T extends readonly string[]>(values: T, labels: Record<T[
   labels,
 });
 
-export const METALS = options(["gold", "silver", "platinum", "other"] as const, {
+export const METALS = options(["gold", "silver", "other"] as const, {
   gold: "Gold",
   silver: "Silver",
-  platinum: "Platinum",
   other: "Other",
 });
+export type Metal = (typeof METALS.values)[number];
 
-/** Gold is graded in karats; silver and platinum by fineness (parts per 1000). */
-export const PURITIES: Record<(typeof METALS.values)[number], readonly string[]> = {
+/** Gold is graded in karats; silver by fineness (parts per 1000). */
+export const PURITIES: Record<Metal, readonly string[]> = {
   gold: ["10K", "12K", "14K", "18K", "21K", "22K", "24K"],
   silver: ["925", "950", "999"],
-  platinum: ["900", "950"],
   other: [],
 };
 
-export const METAL_COLORS = options(["yellow", "white", "rose", "two_tone", "other"] as const, {
+/** Gold alloys come in colours; silver and other metals do not. */
+export const METAL_COLORS = options(["yellow", "white", "rose", "two_tone"] as const, {
   yellow: "Yellow",
   white: "White",
   rose: "Rose",
   two_tone: "Two-tone",
-  other: "Other",
 });
+
+export const hasMetalColor = (metal: Metal | null): boolean => metal === "gold";
 
 export const COMPONENT_TYPES = options(
   ["ring", "earrings", "pendant", "chain", "bracelet"] as const,

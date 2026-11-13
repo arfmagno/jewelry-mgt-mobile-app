@@ -1,4 +1,4 @@
-import { METAL_COLORS, METALS, PURITIES } from "@jewelry/shared";
+import { hasMetalColor, METAL_COLORS, METALS, PURITIES } from "@jewelry/shared";
 import { ChoiceChips, NumberField, optionsOf, TextField } from "@/components/fields";
 import { Columns } from "@/components/layout";
 import type { FormErrors, PieceForm } from "./form";
@@ -42,13 +42,15 @@ export function MetalFields({
         <TextField label="Purity" value={value.purity} onChangeText={(purity) => onChange({ purity })} maxLength={10} />
       ) : null}
       <Columns>
-        <ChoiceChips
-          label="Metal colour"
-          options={optionsOf(METAL_COLORS)}
-          value={value.metalColor}
-          allowClear
-          onChange={(metalColor) => onChange({ metalColor })}
-        />
+        {hasMetalColor(value.metal) ? (
+          <ChoiceChips
+            label="Gold colour"
+            options={optionsOf(METAL_COLORS)}
+            value={value.metalColor}
+            allowClear
+            onChange={(metalColor) => onChange({ metalColor })}
+          />
+        ) : null}
         <NumberField
           label={weightLabel}
           suffix="g"

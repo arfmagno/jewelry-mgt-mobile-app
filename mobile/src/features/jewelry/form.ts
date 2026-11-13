@@ -1,5 +1,6 @@
 import type { ComponentDraft, JewelryDetail, JewelryDraft } from "@jewelry/core";
 import {
+  hasMetalColor,
   lengthToMm,
   mmToLength,
   moneyToInput,
@@ -163,7 +164,7 @@ export const FIELDS_BY_TYPE: Record<JewelryComponent["type"], { ringSize?: true;
 const metalOut = (m: MetalForm, use: boolean) => ({
   metal: use ? m.metal : null,
   purity: use ? orNull(m.purity) : null,
-  metalColor: use ? m.metalColor : null,
+  metalColor: use && hasMetalColor(m.metal) ? m.metalColor : null,
   weightG: use ? parseNumber(m.weightG) : null,
 });
 
