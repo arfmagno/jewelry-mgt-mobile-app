@@ -31,26 +31,26 @@ export function OrderRow({ order, onPress }: { order: OrderSummary; onPress: () 
         { borderRadius: radius.lg, borderColor: colors.divider, backgroundColor: pressed ? colors.accentSoft : colors.surface },
       ]}
     >
-      <View style={[styles.avatar, { backgroundColor: colors.accentSoft }]}>
-        <Text variant="label" color={colors.accent}>
+      <View style={[styles.avatar, { borderColor: colors.gold[1], backgroundColor: colors.background }]}>
+        <Text variant="heading" color={colors.accent} style={{ fontSize: 18, lineHeight: 22 }}>
           {initials(order.clientName)}
         </Text>
       </View>
       <View style={{ flex: 1, gap: 4 }}>
         <View style={styles.line}>
-          <Text variant="label" style={{ flex: 1 }}>
+          <Ionicons name={done ? "checkmark-circle" : "hammer-outline"} size={12} color={done ? colors.success : colors.accent} />
+          <Text variant="eyebrow" muted style={{ flex: 1 }} numberOfLines={1}>
+            {order.code} · {order.itemCount} {order.itemCount === 1 ? "piece" : "pieces"}
+          </Text>
+        </View>
+        <View style={styles.line}>
+          <Text variant="heading" style={{ flex: 1, fontSize: 19, lineHeight: 24 }}>
             {order.clientName}
           </Text>
           <Text variant="money">{formatMoney(order.selling)}</Text>
         </View>
-        <View style={styles.line}>
-          <Ionicons name={done ? "checkmark-circle" : "hammer-outline"} size={14} color={done ? colors.success : colors.accent} />
-          <Text variant="caption" muted style={{ flex: 1 }}>
-            {order.code} · {ORDER_STATUSES.labels[order.status]} · {order.itemCount} {order.itemCount === 1 ? "piece" : "pieces"}
-          </Text>
-        </View>
         <View style={[styles.track, { backgroundColor: colors.divider }]}>
-          <View style={{ width: `${paidShare * 100}%`, height: "100%", borderRadius: 2, backgroundColor: order.balance > 0 ? colors.accent : colors.success }} />
+          <View style={{ width: `${paidShare * 100}%`, height: "100%", backgroundColor: order.balance > 0 ? colors.gold[1] : colors.success }} />
         </View>
         <Text variant="caption" color={order.balance > 0 ? colors.text : colors.success}>
           {paidText}
@@ -61,8 +61,8 @@ export function OrderRow({ order, onPress }: { order: OrderSummary; onPress: () 
 }
 
 const styles = StyleSheet.create({
-  row: { minHeight: TOUCH_TARGET + 24, flexDirection: "row", gap: 12, padding: 12, borderWidth: 1, alignItems: "center" },
-  avatar: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
+  row: { minHeight: TOUCH_TARGET + 24, flexDirection: "row", gap: 14, paddingVertical: 14, paddingHorizontal: 14, borderWidth: StyleSheet.hairlineWidth, alignItems: "center" },
+  avatar: { width: 46, height: 46, borderRadius: 23, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   line: { flexDirection: "row", alignItems: "center", gap: 6 },
-  track: { height: 4, borderRadius: 2, overflow: "hidden" },
+  track: { height: 2, borderRadius: 1, overflow: "hidden", marginTop: 4 },
 });

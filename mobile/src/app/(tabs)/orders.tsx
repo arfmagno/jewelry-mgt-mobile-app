@@ -178,7 +178,7 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
       ListHeaderComponent={header}
       contentContainerStyle={{ paddingHorizontal: gutter, paddingTop: 12, paddingBottom: 32, width: "100%", maxWidth: MAX_CONTENT_WIDTH, alignSelf: "center" }}
       renderSectionHeader={({ section }) => (
-        <Text variant="label" muted accessibilityRole="header" style={{ backgroundColor: colors.background, paddingTop: 12, paddingBottom: 6 }}>
+        <Text variant="eyebrow" color={colors.accent} accessibilityRole="header" style={{ backgroundColor: colors.background, paddingTop: 16, paddingBottom: 8 }}>
           {section.title}
         </Text>
       )}
