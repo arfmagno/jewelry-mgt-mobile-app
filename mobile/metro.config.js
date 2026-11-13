@@ -3,13 +3,9 @@ const { getDefaultConfig } = require("expo/metro-config");
 
 const config = getDefaultConfig(__dirname);
 
-// expo-sqlite on web runs SQLite as WebAssembly in a worker, which needs
-// SharedArrayBuffer and therefore a cross-origin isolated page.
+// expo-sqlite on web runs SQLite as WebAssembly. The page also has to be
+// cross-origin isolated; the published demo gets that from
+// public/coi-serviceworker.js (see .github/workflows/pages.yml).
 config.resolver.assetExts.push("wasm");
-config.server.enhanceMiddleware = (middleware) => (req, res, next) => {
-  res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
-  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-  middleware(req, res, next);
-};
 
 module.exports = config;
