@@ -3,7 +3,9 @@ import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
 import type { AddressInfo } from "node:net";
 import { createHandler, type Deps } from "../src/handler";
+import { emptyIntent } from "@jewelry/shared";
 import type { DesignGenerator } from "../src/lib/ai";
+import type { OrderReader } from "../src/lib/orderReader";
 import { HttpError } from "../src/lib/http";
 import { createDynamoRepo, type RecordRepo, type StoredRecord } from "../src/lib/records";
 import type { Storage } from "../src/lib/storage";
@@ -74,6 +76,14 @@ export const fakeAi: DesignGenerator = {
   },
 };
 
+/** Echoes the message back as the client's name, so routing can be checked without a model. */
+export const fakeOrderReader: OrderReader = {
+  model: "test-reader",
+  async read(message) {
+    return { ...emptyIntent(), clientName: message };
+  },
+};
+
 /** Accepts "Bearer user-<id>" as the user id. */
 export async function fakeAuth(header: string | undefined): Promise<string> {
   const m = header?.match(/^Bearer user-(.+)$/);
@@ -87,6 +97,7 @@ export function testHandler(over: Partial<Deps> = {}) {
     repo: memoryRepo(),
     storage: fakeStorage(),
     ai: fakeAi,
+    orderReader: fakeOrderReader,
     authenticate: fakeAuth,
     now: () => new Date(t++),
     ...over,

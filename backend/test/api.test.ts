@@ -1,6 +1,7 @@
 import type { PullResponse, PushResponse } from "@jewelry/shared";
 import { describe, expect, it } from "vitest";
 import { call, event, fakeStorage, testHandler } from "./support";
+import { parseIntent } from "../src/lib/orderReader";
 
 const meta = (id: string, updatedAt = "2026-03-01T08:00:00.000Z") => ({
   id,
@@ -161,5 +162,28 @@ describe("API", () => {
       event("POST", "/designs/generate", { body: { description: "simple band", enhancePrompt: false } }),
     );
     expect(plain.body.prompt).toBe("basic: simple band");
+  });
+});
+
+describe("order assistant", () => {
+  it("reads a message about an order", async () => {
+    const { handler } = testHandler();
+    const res = await call<{ intent: { clientName: string }; model: string }>(
+      handler,
+      event("POST", "/assistant/order", { body: { message: "Maria Santos", today: "2026-11-13" } }),
+    );
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ intent: { clientName: "Maria Santos", pieces: [] }, model: "test-reader" });
+    const bad = await call(handler, event("POST", "/assistant/order", { body: { message: "", today: "2026-11-13" } }));
+    expect(bad.status).toBe(400);
+  });
+
+  it("turns the model's answer into an intent, dropping values it can't use", () => {
+    const intent = parseIntent(
+      JSON.stringify({ clientName: "Ana", pieces: [{ description: "Ring", type: "brooch", price: "lots" }], downPayment: 500, paymentMethod: "gcash" }),
+    );
+    expect(intent).toMatchObject({ clientName: "Ana", downPayment: 500, paymentMethod: "gcash", notes: null });
+    expect(intent.pieces[0]).toMatchObject({ description: "Ring", type: null, price: null });
+    expect(() => parseIntent("not json")).toThrow();
   });
 });

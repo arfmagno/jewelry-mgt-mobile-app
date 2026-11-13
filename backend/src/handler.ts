@@ -3,9 +3,11 @@ import { workersAiGenerator, type DesignGenerator } from "./lib/ai";
 import { authenticate } from "./lib/auth";
 import { env } from "./lib/config";
 import { errorResponse, json, parseJsonBody } from "./lib/http";
+import { workersAiOrderReader, type OrderReader } from "./lib/orderReader";
 import { createDynamoRepo, type RecordRepo } from "./lib/records";
 import { Router } from "./lib/router";
 import { r2Storage, type Storage } from "./lib/storage";
+import { interpretOrder } from "./routes/assistant";
 import { createUpload, generateDesign, imageUrls } from "./routes/media";
 import { pull, push } from "./routes/sync";
 
@@ -13,6 +15,7 @@ export type Deps = {
   repo: RecordRepo;
   storage: Storage;
   ai: DesignGenerator;
+  orderReader: OrderReader;
   authenticate: (authorization: string | undefined) => Promise<string>;
   now: () => Date;
 };
@@ -25,7 +28,8 @@ export function createHandler(deps: Deps) {
     .on("GET", "/sync/pull", ({ userId, query }) => pull(userId, query, deps))
     .on("POST", "/uploads", ({ userId, body }) => createUpload(userId, body, deps.storage))
     .on("POST", "/images/urls", ({ userId, body }) => imageUrls(userId, body, deps.storage))
-    .on("POST", "/designs/generate", ({ body }) => generateDesign(body, deps.ai));
+    .on("POST", "/designs/generate", ({ body }) => generateDesign(body, deps.ai))
+    .on("POST", "/assistant/order", ({ body }) => interpretOrder(body, deps.orderReader));
 
   return async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     try {
@@ -52,6 +56,7 @@ export const handler = (event: APIGatewayProxyEventV2) => {
     repo: createDynamoRepo(env.tableName),
     storage: r2Storage,
     ai: workersAiGenerator,
+    orderReader: workersAiOrderReader,
     authenticate,
     now: () => new Date(),
   });

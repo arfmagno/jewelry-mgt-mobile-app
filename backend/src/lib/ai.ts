@@ -21,7 +21,7 @@ stones (cut, colour, setting), style/era, and composition. Always end with:
 "professional jewelry product photography, studio lighting, plain light background, sharp focus, high detail".
 Reply with the prompt only.`;
 
-async function runWorkersAi<T>(model: string, input: unknown): Promise<T> {
+export async function runWorkersAi<T>(model: string, input: unknown): Promise<T> {
   const { cloudflareApiToken } = await getSecrets();
   const res = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${env.cloudflareAccountId}/ai/run/${model}`,
