@@ -37,11 +37,11 @@ export function QuickAddButton() {
         accessibilityLabel="Add new"
         accessibilityHint="Choose a piece, order, client or purchase"
         onPress={() => setOpen(true)}
-        style={({ pressed }) => [styles.plus, { backgroundColor: disc, borderColor: colors.gold[1], opacity: pressed ? 0.8 : 1 }]}
+        style={({ pressed }) => [styles.plus, { backgroundColor: disc, borderColor: colors.gold, opacity: pressed ? 0.8 : 1 }]}
       >
         <Svg width={20} height={20} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <Line x1={10} y1={1} x2={10} y2={19} stroke={colors.gold[0]} strokeWidth={1.6} strokeLinecap="round" />
-          <Line x1={1} y1={10} x2={19} y2={10} stroke={colors.gold[0]} strokeWidth={1.6} strokeLinecap="round" />
+          <Line x1={10} y1={1} x2={10} y2={19} stroke={colors.gold} strokeWidth={1.6} strokeLinecap="round" />
+          <Line x1={1} y1={10} x2={19} y2={10} stroke={colors.gold} strokeWidth={1.6} strokeLinecap="round" />
         </Svg>
       </Pressable>
 
