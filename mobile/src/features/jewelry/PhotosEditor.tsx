@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { Button, IconButton } from "@/components/Button";
@@ -19,7 +20,7 @@ type Props = {
 
 export function PhotosEditor({ images, description, onChange, onFileCreated }: Props) {
   const { store, api, online } = useApp();
-  const { colors } = useTheme();
+  const { colors, radius } = useTheme();
   const [busy, setBusy] = useState<PickSource | null>(null);
   const [designing, setDesigning] = useState(false);
 
@@ -80,17 +81,23 @@ export function PhotosEditor({ images, description, onChange, onFileCreated }: P
       <Columns>
         <Button label="Take photo" icon="camera-outline" variant="secondary" busy={busy === "camera"} onPress={() => add("camera")} />
         <Button label="Choose photos" icon="images-outline" variant="secondary" busy={busy === "library"} onPress={() => add("library")} />
-        {api ? (
-          <Button
-            label="Generate design"
-            icon="sparkles-outline"
-            variant="secondary"
-            disabled={!online}
-            hint={online ? "Creates a design image from a description" : "Needs an internet connection"}
-            onPress={() => setDesigning(true)}
-          />
-        ) : null}
       </Columns>
+      <View style={{ gap: 8, padding: 16, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.accent, backgroundColor: colors.accentSoft }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <Ionicons name="sparkles" size={22} color={colors.accent} accessibilityElementsHidden />
+          <Text variant="heading" style={{ flex: 1 }}>
+            Design with AI
+          </Text>
+        </View>
+        <Text muted>
+          {!api
+            ? "Not available in offline-only mode: AI designs are made by the app’s online service, which is not connected."
+            : online
+              ? "Describe the piece and get design images to keep or discard."
+              : "Connect to the internet to generate designs."}
+        </Text>
+        <Button testID="generate-design" label="Generate design" icon="sparkles-outline" disabled={!api || !online} onPress={() => setDesigning(true)} />
+      </View>
       {designing ? (
         <DesignGenerator initialDescription={description} onKeep={keepDesign} onClose={() => setDesigning(false)} />
       ) : null}
