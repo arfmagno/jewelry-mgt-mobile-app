@@ -55,21 +55,21 @@ function TileGrid<V extends string>({ label, tiles, isSelected, onPress, multi, 
                 styles.tile,
                 {
                   width: tileWidth,
-                  borderRadius: radius.lg,
-                  borderWidth: selected ? 2 : 1,
-                  borderColor: selected ? colors.accent : colors.divider,
-                  backgroundColor: selected ? colors.accentSoft : colors.surface,
+                  borderRadius: radius.md,
+                  borderWidth: selected ? 1.5 : StyleSheet.hairlineWidth,
+                  borderColor: selected ? colors.ink : colors.border,
+                  backgroundColor: colors.surface,
                   opacity: pressed ? 0.85 : 1,
                 },
               ]}
             >
               {selected ? (
-                <View style={[styles.check, { backgroundColor: colors.accent }]}>
-                  <Ionicons name="checkmark" size={14} color={colors.onAccent} />
+                <View style={[styles.check, { backgroundColor: colors.ink }]}>
+                  <Ionicons name="checkmark" size={14} color={colors.onInk} />
                 </View>
               ) : null}
               {t.art(selected)}
-              <Text variant="label" align="center" color={selected ? colors.text : colors.textMuted}>
+              <Text variant="eyebrow" align="center" color={selected ? colors.text : colors.textMuted}>
                 {t.label}
               </Text>
               {t.caption ? (
@@ -153,10 +153,9 @@ export function StepIndicator({
             >
               <View
                 style={{
-                  height: state === "current" ? 6 : 4,
+                  height: state === "current" ? 3 : 2,
                   borderRadius: radius.pill,
-                  backgroundColor: state === "todo" ? colors.divider : colors.accent,
-                  opacity: state === "done" ? 0.6 : 1,
+                  backgroundColor: state === "todo" ? colors.divider : state === "current" ? colors.ink : colors.gold,
                 }}
               />
             </Pressable>

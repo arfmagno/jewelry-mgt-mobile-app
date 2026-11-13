@@ -155,14 +155,14 @@ export function ChoiceChips<V extends string>({
               style={[
                 styles.chip,
                 {
-                  borderRadius: radius.pill,
-                  borderColor: selected ? colors.accent : colors.border,
-                  backgroundColor: selected ? colors.accentSoft : "transparent",
+                  borderRadius: radius.sm,
+                  borderColor: selected ? colors.ink : colors.border,
+                  backgroundColor: selected ? colors.ink : "transparent",
                 },
               ]}
             >
-              {selected ? <Ionicons name="checkmark" size={16} color={colors.accent} /> : null}
-              <Text variant="label" color={selected ? colors.text : colors.textMuted}>
+              {selected ? <Ionicons name="checkmark" size={16} color={colors.onInk} /> : null}
+              <Text variant="label" color={selected ? colors.onInk : colors.text}>
                 {o.label}
               </Text>
             </Pressable>

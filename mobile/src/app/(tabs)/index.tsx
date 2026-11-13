@@ -105,7 +105,7 @@ export default function JewelryList() {
               filters={COMPONENT_TYPES.values.map((t) => ({
                 value: t,
                 label: COMPONENT_TYPES.labels[t],
-                art: (selected) => <JewelryGlyph type={t} size={28} strokeWidth={3} color={selected ? colors.onAccent : colors.accent} />,
+                art: (selected) => <JewelryGlyph type={t} size={28} strokeWidth={3} color={selected ? colors.onInk : colors.accent} />,
               }))}
             />
           </>

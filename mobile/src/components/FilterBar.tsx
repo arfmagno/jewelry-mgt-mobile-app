@@ -34,14 +34,14 @@ export function FilterBar<V extends string>({
         gap: 6,
         paddingLeft: art ? 8 : 16,
         paddingRight: 16,
-        borderRadius: radius.pill,
+        borderRadius: radius.sm,
         borderWidth: 1,
-        borderColor: selected ? colors.accent : colors.divider,
-        backgroundColor: selected ? colors.accent : pressed ? colors.accentSoft : colors.surface,
+        borderColor: selected ? colors.ink : colors.divider,
+        backgroundColor: selected ? colors.ink : pressed ? colors.accentSoft : "transparent",
       })}
     >
       {art}
-      <Text variant="label" color={selected ? colors.onAccent : colors.text}>
+      <Text variant="label" color={selected ? colors.onInk : colors.text}>
         {text}
       </Text>
     </Pressable>
@@ -49,7 +49,7 @@ export function FilterBar<V extends string>({
 
   return (
     <View style={{ gap: 6 }}>
-      <Text variant="caption" muted>
+      <Text variant="eyebrow" muted>
         {label}
       </Text>
       <ScrollView
