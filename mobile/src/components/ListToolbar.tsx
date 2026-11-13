@@ -33,10 +33,10 @@ export function ListToolbar({ summary, actions }: { summary: string; actions: To
           onPress={a.onPress}
           style={({ pressed }) => [
             styles.button,
-            { borderRadius: radius.pill, backgroundColor: a.active ? colors.accent : pressed ? colors.accentSoft : "transparent" },
+            { borderRadius: radius.pill, backgroundColor: a.active ? colors.ink : pressed ? colors.accentSoft : "transparent" },
           ]}
         >
-          <Ionicons name={a.icon} size={22} color={a.active ? colors.onAccent : colors.accent} />
+          <Ionicons name={a.icon} size={21} color={a.active ? colors.onInk : colors.text} />
           {a.count ? (
             <View style={[styles.badge, { backgroundColor: colors.accent, borderColor: colors.background }]}>
               <Text variant="caption" color={colors.onAccent} style={{ fontSize: 11, lineHeight: 14 }}>

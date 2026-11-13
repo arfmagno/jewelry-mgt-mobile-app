@@ -78,7 +78,7 @@ export default function ClientsScreen() {
           />
         ) : (
           byLetter(shown).map((g) => (
-            <View key={g.letter} style={{ gap: 8 }}>
+            <View key={g.letter}>
               <Text variant="eyebrow" color={colors.accent} accessibilityRole="header">
                 {g.letter}
               </Text>
@@ -94,7 +94,7 @@ export default function ClientsScreen() {
 }
 
 function ClientRow({ client, onPress }: { client: ClientSummary; onPress: () => void }) {
-  const { colors, radius } = useTheme();
+  const { colors } = useTheme();
   const name = fullName(client);
   const orders = `${client.orders} ${client.orders === 1 ? "order" : "orders"}`;
   return (
@@ -105,10 +105,10 @@ function ClientRow({ client, onPress }: { client: ClientSummary; onPress: () => 
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
-        { borderRadius: radius.lg, borderColor: colors.divider, backgroundColor: pressed ? colors.accentSoft : colors.surface },
+        { borderColor: colors.divider, backgroundColor: pressed ? colors.accentSoft : "transparent" },
       ]}
     >
-      <View style={[styles.avatar, { borderColor: colors.gold[1], backgroundColor: colors.background }]}>
+      <View style={[styles.avatar, { borderColor: colors.gold }]}>
         <Text variant="heading" color={colors.accent} style={{ fontSize: 18, lineHeight: 22 }}>
           {initials(name)}
         </Text>
@@ -138,6 +138,6 @@ function ClientRow({ client, onPress }: { client: ClientSummary; onPress: () => 
 }
 
 const styles = StyleSheet.create({
-  row: { minHeight: TOUCH_TARGET + 24, flexDirection: "row", alignItems: "center", gap: 14, padding: 14, borderWidth: StyleSheet.hairlineWidth },
+  row: { minHeight: TOUCH_TARGET + 24, flexDirection: "row", alignItems: "center", gap: 16, paddingVertical: 18, paddingHorizontal: 2, borderBottomWidth: StyleSheet.hairlineWidth },
   avatar: { width: 46, height: 46, borderRadius: 23, borderWidth: 1, alignItems: "center", justifyContent: "center" },
 });

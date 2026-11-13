@@ -121,7 +121,7 @@ export default function JewelryList() {
         ) : view === "grid" ? (
           <Grid minColumns={2} items={data ?? []} keyOf={(j) => j.id} render={(j) => <JewelryCard item={j} onPress={() => open(j.id)} />} />
         ) : (
-          <View style={{ gap: 8 }}>
+          <View>
             {(data ?? []).map((j) => (
               <JewelryRow key={j.id} item={j} onPress={() => open(j.id)} />
             ))}

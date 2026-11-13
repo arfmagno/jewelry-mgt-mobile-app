@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
+import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { QuickAddButton } from "@/components/QuickAdd";
 import { useApp } from "@/providers/app";
@@ -17,10 +18,10 @@ export default function TabsLayout() {
         headerShown: false,
         // Pages slide a little when changing tab, matching the sideways swipe.
         animation: reduceMotion ? "none" : "shift",
-        tabBarActiveTintColor: colors.accent,
+        tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.divider, minHeight: 64 },
-        tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: 12 },
+        tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, minHeight: 64 },
+        tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: 10, letterSpacing: 1.2, textTransform: "uppercase" },
         tabBarLabelPosition: isTablet ? "beside-icon" : "below-icon",
         sceneStyle: { backgroundColor: colors.background, paddingTop: top },
       }}

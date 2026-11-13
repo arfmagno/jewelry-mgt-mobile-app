@@ -94,7 +94,7 @@ export default function OrdersScreen() {
                   accessibilityState={{ selected }}
                   accessibilityLabel={`${ORDER_STATUSES.labels[status]}, ${counts?.[status] ?? 0} orders`}
                   onPress={() => setPage(i)}
-                  style={[styles.tab, { borderColor: selected ? colors.accent : "transparent" }]}
+                  style={[styles.tab, { borderColor: selected ? colors.text : "transparent" }]}
                 >
                   <Text variant="label" color={selected ? colors.text : colors.textMuted}>
                     {ORDER_STATUSES.labels[status]}
@@ -119,7 +119,7 @@ export default function OrdersScreen() {
 
 /** One status: in-production orders all together; completed orders a month or a year at a time. */
 function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search: string; unpaid: boolean; onOpen: (id: string) => void }) {
-  const { colors, radius } = useTheme();
+  const { colors } = useTheme();
   const { gutter } = useLayout();
   const [chosen, setChosen] = useState<Period | null>(null);
   const [limit, setLimit] = useState(PAGE_SIZE);
@@ -146,22 +146,22 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
   const header = browsing ? (
     <View style={{ gap: 12, paddingBottom: 4 }}>
       <PeriodNavigator period={period} months={months ?? []} years={years ?? []} onChange={show} />
-      <View style={{ flexDirection: "row", gap: 8 }}>
+      <View style={[styles.stats, { borderColor: colors.divider }]}>
         {[
           ["Orders", String(summary?.orders ?? 0)],
           ["Sales", formatMoney(summary?.selling ?? 0)],
           ["To collect", formatMoney(summary?.balance ?? 0)],
-        ].map(([label, value]) => (
+        ].map(([label, value], i) => (
           <View
             key={label}
             accessible
             accessibilityLabel={`${label}: ${value}`}
-            style={{ flex: 1, padding: 12, gap: 4, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold[1], backgroundColor: colors.surface }}
+            style={{ flex: 1, gap: 4, paddingHorizontal: 10, borderLeftWidth: i ? StyleSheet.hairlineWidth : 0, borderColor: colors.divider }}
           >
             <Text variant="eyebrow" muted>
               {label}
             </Text>
-            <Text variant="money" style={{ fontSize: 17 }} numberOfLines={1} adjustsFontSizeToFit>
+            <Text variant="money" style={{ fontSize: 18 }} numberOfLines={1} adjustsFontSizeToFit>
               {value}
             </Text>
           </View>
@@ -185,9 +185,7 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
         </Text>
       )}
       renderItem={({ item }) => (
-        <View style={{ paddingBottom: 8 }}>
-          <OrderRow order={item} onPress={() => onOpen(item.id)} />
-        </View>
+        <OrderRow order={item} onPress={() => onOpen(item.id)} />
       )}
       onEndReachedThreshold={0.5}
       onEndReached={() => {
@@ -220,5 +218,6 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
 
 const styles = StyleSheet.create({
   tabs: { flexDirection: "row", borderBottomWidth: StyleSheet.hairlineWidth },
-  tab: { flex: 1, minHeight: TOUCH_TARGET, alignItems: "center", justifyContent: "center", borderBottomWidth: 3 },
+  tab: { flex: 1, minHeight: TOUCH_TARGET, alignItems: "center", justifyContent: "center", borderBottomWidth: 2 },
+  stats: { flexDirection: "row", paddingVertical: 14, borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth },
 });

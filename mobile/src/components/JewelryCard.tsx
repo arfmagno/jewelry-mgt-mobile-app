@@ -25,26 +25,19 @@ function Status({ item }: { item: JewelrySummary }) {
   );
 }
 
+/** A piece as in a catalogue: the picture, then its name and price, with no box around it. */
 export function JewelryCard({ item, onPress }: { item: JewelrySummary; onPress: () => void }) {
-  const { colors, radius } = useTheme();
+  const { colors } = useTheme();
   return (
     <Pressable
       testID={`jewelry-card-${item.id}`}
       accessibilityRole="button"
       accessibilityLabel={`${pieceLabel(item)}. ${item.description}. ${statusOf(item)}. Cost ${formatMoney(item.totalCost)}`}
       onPress={onPress}
-      style={({ pressed }) => ({
-        backgroundColor: pressed ? colors.accentSoft : colors.surface,
-        borderColor: colors.divider,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderRadius: radius.lg,
-        padding: 8,
-        paddingBottom: 14,
-        gap: 12,
-      })}
+      style={({ pressed }) => ({ gap: 12, paddingBottom: 12, opacity: pressed ? 0.7 : 1 })}
     >
       <Thumb image={item.image} kind={item.pieceType} />
-      <View style={{ gap: 6, paddingHorizontal: 6 }}>
+      <View style={{ gap: 6, paddingHorizontal: 2 }}>
         <Text variant="eyebrow" color={colors.accent}>
           {pieceLabel(item)}
         </Text>
@@ -60,7 +53,7 @@ export function JewelryCard({ item, onPress }: { item: JewelrySummary; onPress: 
 
 /** Compact one-line version of the card for list view. */
 export function JewelryRow({ item, onPress }: { item: JewelrySummary; onPress: () => void }) {
-  const { colors, radius } = useTheme();
+  const { colors } = useTheme();
   return (
     <Pressable
       testID={`jewelry-row-${item.id}`}
@@ -71,12 +64,11 @@ export function JewelryRow({ item, onPress }: { item: JewelrySummary; onPress: (
         flexDirection: "row",
         alignItems: "center",
         gap: 12,
-        padding: 8,
-        paddingRight: 14,
-        borderRadius: radius.lg,
-        borderWidth: StyleSheet.hairlineWidth,
+        paddingVertical: 12,
+        paddingHorizontal: 2,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderColor: colors.divider,
-        backgroundColor: pressed ? colors.accentSoft : colors.surface,
+        backgroundColor: pressed ? colors.accentSoft : "transparent",
       })}
     >
       <Thumb image={item.image} size={64} kind={item.pieceType} />

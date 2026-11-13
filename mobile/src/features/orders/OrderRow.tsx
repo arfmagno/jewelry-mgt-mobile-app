@@ -15,7 +15,7 @@ export const initials = (name: string) =>
 
 /** One order: client, code, status, total and how much of it is paid. */
 export function OrderRow({ order, onPress }: { order: OrderSummary; onPress: () => void }) {
-  const { colors, radius } = useTheme();
+  const { colors } = useTheme();
   const paidShare = order.selling > 0 ? Math.min(1, order.paid / order.selling) : 0;
   const done = order.status === "completed";
   const paidText = order.balance > 0 ? `${formatMoney(order.balance)} to collect` : "Fully paid";
@@ -28,10 +28,10 @@ export function OrderRow({ order, onPress }: { order: OrderSummary; onPress: () 
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
-        { borderRadius: radius.lg, borderColor: colors.divider, backgroundColor: pressed ? colors.accentSoft : colors.surface },
+        { borderColor: colors.divider, backgroundColor: pressed ? colors.accentSoft : "transparent" },
       ]}
     >
-      <View style={[styles.avatar, { borderColor: colors.gold[1], backgroundColor: colors.background }]}>
+      <View style={[styles.avatar, { borderColor: colors.gold }]}>
         <Text variant="heading" color={colors.accent} style={{ fontSize: 18, lineHeight: 22 }}>
           {initials(order.clientName)}
         </Text>
@@ -50,7 +50,7 @@ export function OrderRow({ order, onPress }: { order: OrderSummary; onPress: () 
           <Text variant="money">{formatMoney(order.selling)}</Text>
         </View>
         <View style={[styles.track, { backgroundColor: colors.divider }]}>
-          <View style={{ width: `${paidShare * 100}%`, height: "100%", backgroundColor: order.balance > 0 ? colors.gold[1] : colors.success }} />
+          <View style={{ width: `${paidShare * 100}%`, height: "100%", backgroundColor: order.balance > 0 ? colors.gold : colors.success }} />
         </View>
         <Text variant="caption" color={order.balance > 0 ? colors.text : colors.success}>
           {paidText}
@@ -61,7 +61,8 @@ export function OrderRow({ order, onPress }: { order: OrderSummary; onPress: () 
 }
 
 const styles = StyleSheet.create({
-  row: { minHeight: TOUCH_TARGET + 24, flexDirection: "row", gap: 14, paddingVertical: 14, paddingHorizontal: 14, borderWidth: StyleSheet.hairlineWidth, alignItems: "center" },
+  // Open rows divided by a hairline, like a printed ledger.
+  row: { minHeight: TOUCH_TARGET + 24, flexDirection: "row", gap: 16, paddingVertical: 18, paddingHorizontal: 2, borderBottomWidth: StyleSheet.hairlineWidth, alignItems: "center" },
   avatar: { width: 46, height: 46, borderRadius: 23, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   line: { flexDirection: "row", alignItems: "center", gap: 6 },
   track: { height: 2, borderRadius: 1, overflow: "hidden", marginTop: 4 },
