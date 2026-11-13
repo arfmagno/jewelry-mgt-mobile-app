@@ -5,6 +5,7 @@ import {
   getOrder,
   latestPrice,
   listClients,
+  listClientSummaries,
   listJewelry,
   listOrders,
   monthlySummary,
@@ -23,6 +24,21 @@ describe("clients", () => {
     expect((await listClients(store, { search: "cruz" })).map((c) => c.firstName)).toEqual(["Ana"]);
     expect((await listClients(store, { search: "0998 765" })).map((c) => c.firstName)).toEqual(["Ben"]);
     expect((await listClients(store)).map((c) => c.lastName)).toEqual(["Cruz", "Santos"]);
+  });
+
+  it("counts each client's orders and what they still owe", async () => {
+    const { store } = await testStore();
+    const ana = (await store.insert("clients", clientInput())).id;
+    await store.insert("clients", clientInput({ firstName: "Ben", lastName: "Santos", phone: "0998 765 4321" }));
+    for (const [price, paid] of [[100_000, 100_000], [200_000, 50_000]] as const) {
+      const jewelryId = await saveJewelry(store, ringDraft());
+      const order = await saveJobOrder(store, { clientId: ana, orderDate: "2026-03-01", status: "in_production", notes: null, items: [{ jewelryId, sellingPrice: price }] });
+      await store.insert("payments", { jobOrderId: order, amount: paid, paidAt: "2026-03-01", method: "cash", notes: null });
+    }
+    expect((await listClientSummaries(store)).map((c) => [c.firstName, c.orders, c.balance])).toEqual([
+      ["Ana", 2, 150_000],
+      ["Ben", 0, 0],
+    ]);
   });
 });
 

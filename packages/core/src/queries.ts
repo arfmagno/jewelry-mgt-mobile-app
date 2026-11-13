@@ -58,6 +58,22 @@ export async function listClients(store: Store, p: PageParams = {}): Promise<Cli
   );
 }
 
+export type ClientSummary = Client & { orders: number; balance: number };
+
+/** Clients with how many orders they have and what they still owe. */
+export async function listClientSummaries(store: Store, p: PageParams = {}): Promise<ClientSummary[]> {
+  const clients = await listClients(store, p);
+  if (clients.length === 0) return [];
+  const rows = await store.query<{ clientId: string; orders: number; balance: number }>(
+    `SELECT o.clientId, COUNT(*) AS orders, SUM(${ORDER_SELLING} - ${ORDER_PAID}) AS balance
+     FROM jobOrders o WHERE o.deletedAt IS NULL AND o.purgedAt IS NULL AND o.clientId IN (${clients.map(() => "?").join(", ")})
+     GROUP BY o.clientId`,
+    clients.map((c) => c.id),
+  );
+  const totals = new Map(rows.map((r) => [r.clientId, r]));
+  return clients.map((c) => ({ ...c, orders: totals.get(c.id)?.orders ?? 0, balance: totals.get(c.id)?.balance ?? 0 }));
+}
+
 // ── Suppliers & materials ───────────────────────────────────────────────
 
 export async function listSuppliers(store: Store, p: PageParams = {}): Promise<Supplier[]> {
