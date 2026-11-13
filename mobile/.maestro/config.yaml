@@ -8,3 +8,4 @@ executionOrder:
     - client
     - piece-and-order
     - trash
+    - assistant

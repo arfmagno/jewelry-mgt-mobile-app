@@ -1,0 +1,25 @@
+appId: dev.atelier.jewelry
+name: assistant
+---
+# Describe an order in a sentence; the assistant (reading on the phone, offline)
+# finds the client made in the client flow, makes a new piece to order and asks
+# about the down payment before creating the order.
+- launchApp
+- tapOn:
+    id: "quick-add"
+- tapOn:
+    id: "quick-add-assistant"
+- tapOn:
+    id: "assistant-input"
+- inputText: "Ana Santos wants a silver bracelet, 3,500"
+- tapOn:
+    id: "assistant-send"
+- assertVisible: "Found Ana Santos.*"
+- assertVisible: "Is there a down payment today?"
+- tapOn: "No down payment"
+- assertVisible:
+    id: "assistant-summary"
+- tapOn:
+    id: "assistant-create"
+- assertVisible: "Ana Santos"
+- assertVisible: "Silver bracelet"
