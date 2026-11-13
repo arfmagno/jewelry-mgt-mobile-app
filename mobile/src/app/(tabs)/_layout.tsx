@@ -6,7 +6,7 @@ import { useApp } from "@/providers/app";
 import { useLayout, useTheme } from "@/theme";
 
 export default function TabsLayout() {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, reduceMotion } = useTheme();
   const { isTablet } = useLayout();
   const { top } = useSafeAreaInsets();
   const { syncStatus } = useApp();
@@ -15,6 +15,8 @@ export default function TabsLayout() {
       screenOptions={{
         // The tab bar already says where you are; the space goes to the list.
         headerShown: false,
+        // Pages slide a little when changing tab, matching the sideways swipe.
+        animation: reduceMotion ? "none" : "shift",
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.divider, minHeight: 64 },

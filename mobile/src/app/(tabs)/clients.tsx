@@ -2,9 +2,9 @@ import { listClients } from "@jewelry/core";
 import { formatPhPhone } from "@jewelry/shared";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
 import { TextField } from "@/components/fields";
 import { EmptyState, ListRow, Screen } from "@/components/layout";
+import { TabSwipe } from "@/components/TabSwipe";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { fullName } from "@/lib/format";
 
@@ -14,7 +14,7 @@ export default function ClientsScreen() {
   const { data, loading } = useLiveQuery((s) => listClients(s, { search, limit: 500 }), [search]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <TabSwipe tab="clients">
       <Screen testID="client-list">
         <TextField label="Search clients" value={search} onChangeText={setSearch} placeholder="Name or phone number" autoCorrect={false} />
         {!loading && data?.length === 0 ? (
@@ -32,6 +32,6 @@ export default function ClientsScreen() {
           ))
         )}
       </Screen>
-    </View>
+    </TabSwipe>
   );
 }

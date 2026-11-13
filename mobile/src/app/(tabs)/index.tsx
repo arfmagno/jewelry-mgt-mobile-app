@@ -9,6 +9,7 @@ import { FilterBar } from "@/components/FilterBar";
 import { JewelryGlyph } from "@/components/illustrations";
 import { JewelryCard, JewelryRow } from "@/components/JewelryCard";
 import { ListToolbar } from "@/components/ListToolbar";
+import { TabSwipe } from "@/components/TabSwipe";
 import { EmptyState, Grid, Screen } from "@/components/layout";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { useTheme } from "@/theme";
@@ -48,7 +49,7 @@ export default function JewelryList() {
     .join(" · ");
 
   return (
-    <View style={{ flex: 1 }}>
+    <TabSwipe tab="index">
       <Screen wide testID="jewelry-list">
         <ListToolbar
           summary={summary}
@@ -130,6 +131,6 @@ export default function JewelryList() {
           <Button label="Show more pieces" icon="chevron-down" variant="secondary" onPress={() => setLimit((l) => l + PAGE)} />
         ) : null}
       </Screen>
-    </View>
+    </TabSwipe>
   );
 }
