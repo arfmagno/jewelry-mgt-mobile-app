@@ -18,9 +18,10 @@ The palette follows the system appearance setting:
 The light theme uses a deeper antique gold, because bright gold on ivory fails contrast.
 
 - **Type**: Cormorant Garamond for headings, piece names, client names and prices (lining figures, so "18K" never reads "ı8K"). Inter for body text and fields. Codes, statuses and list headings are small spaced capitals.
-- **Gold**: filled gold surfaces (primary buttons, the add button) use a polished gradient with dark ink, which passes AA on every stop. Thin gold hairlines frame thumbnails and monograms. The add button in the tab bar is a flat black disc with a fine gold cross.
+- **Flat and restrained**: no gradients or shadows. Primary buttons are solid ink with small spaced capitals; secondary buttons are an ink outline. Corners are nearly square.
+- **Gold** is kept to type and fine lines: codes, section labels, hairlines around thumbnails and monograms. The add button in the tab bar is a black disc with a fine gold cross.
 - **Pieces without photos** sit on a softly lit, display-case backdrop with a line drawing of the piece.
-- **Quiet chrome**: hairline borders, no pill badges; a status is a small dot and a word.
+- **Quiet chrome**: pieces are shown like a catalogue (picture, then name and price, no box). Orders, clients and other lists are open rows divided by hairlines, like a ledger. Detail pages are spec sheets: label on the left, value on the right. A status is a small dot and a word. Screen headers are small capitals; the page carries the large title.
 - **Spacing**: 4 / 8 / 12 / 16 / 24 / 32. Radii are 6 / 10 / 16.
 - **Illustrations**: line drawings of each jewelry type, stone cut, and polished-metal swatches (`components/illustrations.tsx`) drive the pickers. They are decorative; every one sits next to its name in text.
 - **Guided entry**: adding a piece is split into short steps (type, metal, sizes, stones, costs, finish) with a progress bar, and the running cost is always visible on the costs step.
