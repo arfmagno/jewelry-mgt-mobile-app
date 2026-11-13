@@ -18,7 +18,6 @@ import { useImageSource } from "@/hooks/useImageSource";
 import { MAX_CONTENT_WIDTH, TOUCH_TARGET, useLayout, useTheme } from "@/theme";
 import type { IconName } from "./Button";
 import { JewelryGlyph } from "./illustrations";
-import { Stage } from "./Stage";
 import { Text } from "./Text";
 
 /** Scrollable page, centred with a readable max width on tablets. */
@@ -260,11 +259,10 @@ export function Thumb({
   if (!uri) {
     return (
       <View
-        style={[box, styles.thumbEmpty, { borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold, overflow: "hidden" }]}
+        style={[box, styles.thumbEmpty, { borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold, backgroundColor: colors.stage, overflow: "hidden" }]}
         accessibilityLabel={label ? `${label}, no photo` : undefined}
         accessible={!!label}
       >
-        <Stage />
         {kind ? (
           <JewelryGlyph type={kind} size={size ? size * 0.66 : 88} color={colors.accent} strokeWidth={size && size < 64 ? 2.6 : 1.6} />
         ) : (
