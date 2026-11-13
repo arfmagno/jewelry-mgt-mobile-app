@@ -7,6 +7,8 @@
 
 It runs entirely on always-free cloud tiers and works without a connection. The phone's database is the source of truth, and changes sync in the background when the phone is online.
 
+**[Try the web demo →](https://arfmagno.github.io/jewelry-mgt-mobile-app/)** It's the same app running offline in your browser, filled with made-up sample records. Nothing leaves your browser, and the page reloads once on the first visit. Payment reminders need the phone app.
+
 <p align="center">
   <img src="docs/screenshots/assistant.gif" width="300" alt="Describing an order in one message: the assistant finds the client is new, asks for their number, offers matching rings in stock, and shows the order to confirm">
 </p>
