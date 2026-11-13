@@ -2,6 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import type { ComponentProps } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View, type ViewStyle } from "react-native";
 import { TOUCH_TARGET, useTheme } from "@/theme";
+import { GoldFill } from "./gold";
 import { Text } from "./Text";
 
 export type IconName = ComponentProps<typeof Ionicons>["name"];
@@ -21,7 +22,7 @@ type ButtonProps = {
 export function Button({ label, onPress, variant = "primary", icon, disabled, busy, hint, style, testID }: ButtonProps) {
   const { colors, radius, space } = useTheme();
   const palette = {
-    primary: { bg: colors.accent, fg: colors.onAccent, border: colors.accent },
+    primary: { bg: colors.gold[2], fg: colors.onGold, border: "transparent" },
     secondary: { bg: "transparent", fg: colors.accent, border: colors.accent },
     ghost: { bg: "transparent", fg: colors.text, border: "transparent" },
     danger: { bg: colors.danger, fg: colors.onDanger, border: colors.danger },
@@ -43,17 +44,19 @@ export function Button({ label, onPress, variant = "primary", icon, disabled, bu
           borderColor: palette.border,
           borderRadius: radius.md,
           paddingHorizontal: space.lg,
+          overflow: "hidden",
           opacity: inactive ? 0.5 : pressed ? 0.8 : 1,
         },
         style,
       ]}
     >
+      {variant === "primary" ? <GoldFill radius={radius.md} /> : null}
       {busy ? (
         <ActivityIndicator color={palette.fg} />
       ) : (
         <View style={styles.row}>
           {icon ? <Ionicons name={icon} size={20} color={palette.fg} /> : null}
-          <Text variant="label" color={palette.fg} style={{ fontSize: 15 }}>
+          <Text variant="label" color={palette.fg} style={{ fontSize: 15, letterSpacing: 0.6 }}>
             {label}
           </Text>
         </View>
