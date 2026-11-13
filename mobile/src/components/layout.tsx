@@ -18,6 +18,7 @@ import { useImageSource } from "@/hooks/useImageSource";
 import { MAX_CONTENT_WIDTH, TOUCH_TARGET, useLayout, useTheme } from "@/theme";
 import type { IconName } from "./Button";
 import { JewelryGlyph } from "./illustrations";
+import { Stage } from "./gold";
 import { Text } from "./Text";
 
 /** Scrollable page, centred with a readable max width on tablets. */
@@ -247,12 +248,13 @@ export function Thumb({
   if (!uri) {
     return (
       <View
-        style={[box, styles.thumbEmpty, { backgroundColor: colors.accentSoft, borderRadius: radius.md }]}
+        style={[box, styles.thumbEmpty, { borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold[1], overflow: "hidden" }]}
         accessibilityLabel={label ? `${label}, no photo` : undefined}
         accessible={!!label}
       >
+        <Stage />
         {kind ? (
-          <JewelryGlyph type={kind} size={size ? size * 0.7 : 96} color={colors.accent} strokeWidth={size && size < 64 ? 3 : 2} />
+          <JewelryGlyph type={kind} size={size ? size * 0.66 : 88} color={colors.accent} strokeWidth={size && size < 64 ? 2.6 : 1.6} />
         ) : (
           <Ionicons name="diamond-outline" size={size ? size / 2.5 : 36} color={colors.accent} />
         )}
