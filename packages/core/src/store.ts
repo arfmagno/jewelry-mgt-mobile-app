@@ -65,6 +65,11 @@ export class Store {
     return () => this.listeners.delete(listener);
   }
 
+  /** Tells subscribers about writes made directly through `db`. */
+  changed(tables: TableName[]) {
+    for (const t of tables) this.notify(t);
+  }
+
   private notify(table: TableName) {
     this.pendingNotify.add(table);
     if (this.txDepth === 0) this.flushNotify();
