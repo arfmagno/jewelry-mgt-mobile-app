@@ -15,6 +15,7 @@ import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Text } from "@/components/Text";
 import { openStore } from "@/lib/db";
+import { useReminderLinks } from "@/lib/reminders";
 import { AppProvider, useApp } from "@/providers/app";
 import { ThemeProvider, useTheme } from "@/theme";
 
@@ -60,6 +61,7 @@ export default function RootLayout() {
 function Navigator() {
   const { colors, scheme } = useTheme();
   const { authState } = useApp();
+  useReminderLinks();
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(colors.background).catch(() => undefined);
