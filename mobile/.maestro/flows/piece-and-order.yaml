@@ -5,7 +5,9 @@ name: piece-and-order
 # Create an on-hand ring, stepping through the editor (metal defaults to 18K yellow gold).
 - tapOn: "Pieces"
 - tapOn:
-    id: "add-piece"
+    id: "quick-add"
+- tapOn:
+    id: "quick-add-piece"
 - tapOn:
     id: "type-ring"
 - tapOn:
@@ -37,7 +39,9 @@ name: piece-and-order
 # Sell it in a job order to the client from the previous flow.
 - tapOn: "Orders"
 - tapOn:
-    id: "add-order"
+    id: "quick-add"
+- tapOn:
+    id: "quick-add-order"
 - tapOn:
     id: "order-client"
 - tapOn: "Ana Santos"

@@ -3,7 +3,7 @@ import { COMPONENT_TYPES } from "@jewelry/shared";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
-import { Button, Fab } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { TextField } from "@/components/fields";
 import { FilterBar } from "@/components/FilterBar";
 import { JewelryGlyph } from "@/components/illustrations";
@@ -130,7 +130,6 @@ export default function JewelryList() {
           <Button label="Show more pieces" icon="chevron-down" variant="secondary" onPress={() => setLimit((l) => l + PAGE)} />
         ) : null}
       </Screen>
-      <Fab testID="add-piece" label="New piece" onPress={add} />
     </View>
   );
 }

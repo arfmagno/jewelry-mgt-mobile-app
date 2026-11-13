@@ -3,7 +3,7 @@ import { formatMoney, ORDER_STATUSES, type JobOrder } from "@jewelry/shared";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { FlatList, Pressable, SectionList, StyleSheet, useWindowDimensions, View } from "react-native";
-import { Button, Fab } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { TextField } from "@/components/fields";
 import { ListToolbar } from "@/components/ListToolbar";
 import { EmptyState } from "@/components/layout";
@@ -115,7 +115,6 @@ export default function OrdersScreen() {
           </View>
         )}
       />
-      <Fab testID="add-order" label="New order" onPress={() => router.push("/orders/edit")} />
     </View>
   );
 }
@@ -177,7 +176,7 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
       keyboardShouldPersistTaps="handled"
       stickySectionHeadersEnabled
       ListHeaderComponent={header}
-      contentContainerStyle={{ paddingHorizontal: gutter, paddingTop: 12, paddingBottom: 96, width: "100%", maxWidth: MAX_CONTENT_WIDTH, alignSelf: "center" }}
+      contentContainerStyle={{ paddingHorizontal: gutter, paddingTop: 12, paddingBottom: 32, width: "100%", maxWidth: MAX_CONTENT_WIDTH, alignSelf: "center" }}
       renderSectionHeader={({ section }) => (
         <Text variant="label" muted accessibilityRole="header" style={{ backgroundColor: colors.background, paddingTop: 12, paddingBottom: 6 }}>
           {section.title}

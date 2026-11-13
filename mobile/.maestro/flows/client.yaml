@@ -5,7 +5,9 @@ name: client
     clearState: true
 - tapOn: "Clients"
 - tapOn:
-    id: "add-client"
+    id: "quick-add"
+- tapOn:
+    id: "quick-add-client"
 - tapOn:
     id: "client-first-name"
 - inputText: "Ana"

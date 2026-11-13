@@ -3,7 +3,6 @@ import { formatPhPhone } from "@jewelry/shared";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
-import { Fab } from "@/components/Button";
 import { TextField } from "@/components/fields";
 import { EmptyState, ListRow, Screen } from "@/components/layout";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
@@ -33,7 +32,6 @@ export default function ClientsScreen() {
           ))
         )}
       </Screen>
-      <Fab testID="add-client" label="New client" onPress={() => router.push("/clients/edit")} />
     </View>
   );
 }
