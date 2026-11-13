@@ -10,7 +10,7 @@ import {
 } from "@jewelry/shared";
 import { View } from "react-native";
 import { Button, IconButton } from "@/components/Button";
-import { ChoiceChips, NumberField, optionsOf, SelectField, TextField, type Option } from "@/components/fields";
+import { ChoiceChips, MoneyField, NumberField, optionsOf, SelectField, TextField, type Option } from "@/components/fields";
 import { Card, Columns } from "@/components/layout";
 import { Text } from "@/components/Text";
 import { useTheme } from "@/theme";
@@ -144,11 +144,9 @@ function StoneEditor({
         <NumberField label="Total carat" suffix="ct" hint="All stones in this row" value={stone.totalCarat} onChangeText={(totalCarat) => onChange({ totalCarat })} error={errors[`${errorPrefix}totalCarat`]} />
       </Columns>
       {isDiamond ? (
-        <Columns>
-          <TextField label="Colour grade" placeholder="e.g. G" value={stone.colorGrade} onChangeText={(colorGrade) => onChange({ colorGrade })} maxLength={10} autoCapitalize="characters" />
-          <TextField label="Clarity grade" placeholder="e.g. VS1" value={stone.clarityGrade} onChangeText={(clarityGrade) => onChange({ clarityGrade })} maxLength={10} autoCapitalize="characters" />
-        </Columns>
+        <TextField label="Colour grade" placeholder="e.g. G" value={stone.colorGrade} onChangeText={(colorGrade) => onChange({ colorGrade })} maxLength={10} autoCapitalize="characters" />
       ) : null}
+      <MoneyField label="Price per stone" value={stone.unitCost} onChangeText={(unitCost) => onChange({ unitCost })} error={errors[`${errorPrefix}unitCost`]} />
       <Columns>
         <SelectField label="Setting" options={optionsOf(STONE_SETTINGS)} value={stone.setting} allowClear onChange={(setting) => onChange({ setting })} />
         <SelectField label="Supplier" options={suppliers} value={stone.supplierId} allowClear onChange={(supplierId) => onChange({ supplierId })} />

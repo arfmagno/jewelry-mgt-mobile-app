@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getSettings, saveJewelry, saveJobOrder, savePurchase, saveSettings } from "../src/aggregates";
 import {
+  getJewelry,
   getOrder,
   latestPrice,
   listClients,
@@ -23,6 +24,29 @@ describe("clients", () => {
 });
 
 describe("jewelry", () => {
+  it("adds priced stones to the piece cost everywhere it is shown", async () => {
+    const { store } = await testStore();
+    const base = ringDraft();
+    const stone = { ...base.components[0]!.stones[0]!, quantity: 3, unitCost: 150_000 };
+    const pieceId = await saveJewelry(store, ringDraft({ components: [{ ...base.components[0]!, stones: [stone] }] }));
+
+    const [summary] = await listJewelry(store);
+    expect(summary!.totalCost).toBe(1_330_000 + 450_000);
+    const detail = await getJewelry(store, pieceId);
+    expect(detail).toMatchObject({ stoneCost: 450_000, totalCost: 1_780_000 });
+
+    const clientId = (await store.insert("clients", clientInput())).id;
+    await saveJobOrder(store, {
+      clientId,
+      orderDate: "2026-04-01",
+      status: "in_production",
+      notes: null,
+      items: [{ jewelryId: pieceId, sellingPrice: 2_500_000 }],
+    });
+    const [month] = await monthlySummary(store, 2026);
+    expect(month).toMatchObject({ cost: 1_780_000, profit: 720_000 });
+  });
+
   it("derives type, cost and availability", async () => {
     const { store } = await testStore();
     const id = await saveJewelry(

@@ -100,6 +100,11 @@ export const MIGRATIONS: readonly string[] = [
   /* 2 — cost lines no longer record a worker name */ `
   ALTER TABLE jewelryCosts DROP COLUMN workerName;
   `,
+
+  /* 3 — stones carry their own price; clarity grade is no longer recorded */ `
+  ALTER TABLE jewelryStones DROP COLUMN clarityGrade;
+  ALTER TABLE jewelryStones ADD COLUMN unitCost INTEGER;
+  `,
 ];
 
 /** Columns that exist only on the device and are never sent to the server. */

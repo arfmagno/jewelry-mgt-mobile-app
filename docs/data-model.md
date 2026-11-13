@@ -35,7 +35,7 @@ suppliers ──< purchases ──< purchaseLines >── materials ──< stoc
 |---|---|
 | `jewelries` | One sellable piece or set. `code` (`JW-00001`) is assigned by the server on first sync. `origin` is `on_hand` (made for stock) or `made_to_order`. `manufactureDate` lives on the piece, because on-hand pieces exist before any order. When `sameMetalForAll` is set, metal, purity, colour and total weight are stored on the piece. |
 | `jewelryComponents` | The parts of a piece: `ring`, `earrings`, `pendant`, `chain`, `bracelet`. A necklace is a pendant plus a chain; a set is several parts. Type-specific fields: ring size, earring back, chain/bracelet style, length, width. Metal fields are used when parts differ. |
-| `jewelryStones` | Stones set on a specific part: kind (natural or lab-grown diamond, moissanite, cubic zirconia, coloured gemstone), shape, count, size, total carat, colour/clarity grade, setting style, supplier. |
+| `jewelryStones` | Stones set on a specific part: kind (natural or lab-grown diamond, moissanite, cubic zirconia, coloured gemstone), shape, count, size, total carat, colour grade, setting style, supplier and price per stone. A piece's cost is its cost lines plus its priced stones. |
 | `jewelryCosts` | Cost lines other than stones: metal (by weight, optionally from a supplier and stock material), labor, plating/*tubog*, engraving, and other, each with an optional description. |
 | `jewelryImages` | Photos and kept AI designs. `storageKey` points to R2 once uploaded; `source` is `upload` or `ai`, with the prompt kept for AI images. |
 

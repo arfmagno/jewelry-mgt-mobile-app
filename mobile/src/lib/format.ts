@@ -51,8 +51,7 @@ export function formatStone(s: JewelryStone): string {
   const name = [s.shape ? STONE_SHAPES.labels[s.shape] : null, s.gemName || STONE_KINDS.labels[s.stoneKind]]
     .filter(Boolean)
     .join(" ");
-  const grade = [s.colorGrade, s.clarityGrade].filter(Boolean).join("/");
-  const details = [s.sizeMm ? `${trim(s.sizeMm)} mm` : null, s.totalCarat ? `${trim(s.totalCarat)} ct total` : null, grade || null]
+  const details = [s.sizeMm ? `${trim(s.sizeMm)} mm` : null, s.totalCarat ? `${trim(s.totalCarat)} ct total` : null, s.colorGrade ? `colour ${s.colorGrade}` : null]
     .filter(Boolean)
     .join(", ");
   const setting = s.setting ? STONE_SETTINGS.labels[s.setting] : null;

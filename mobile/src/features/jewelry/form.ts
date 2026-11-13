@@ -39,9 +39,10 @@ export type StoneForm = {
   sizeMm: string;
   totalCarat: string;
   colorGrade: string;
-  clarityGrade: string;
   setting: JewelryStone["setting"];
   supplierId: string | null;
+  /** Price of one stone, in pesos. */
+  unitCost: string;
   notes: string;
 };
 
@@ -103,9 +104,9 @@ export const emptyStone = (): StoneForm => ({
   sizeMm: "",
   totalCarat: "",
   colorGrade: "",
-  clarityGrade: "",
   setting: null,
   supplierId: null,
+  unitCost: "",
   notes: "",
 });
 
@@ -205,9 +206,9 @@ export function toDraft(f: PieceForm, units: Units): JewelryDraft {
           sizeMm: parseNumber(s.sizeMm),
           totalCarat: parseNumber(s.totalCarat),
           colorGrade: orNull(s.colorGrade),
-          clarityGrade: orNull(s.clarityGrade),
           setting: s.setting,
           supplierId: s.supplierId,
+          unitCost: parseMoney(s.unitCost),
           materialId: null,
           notes: orNull(s.notes),
         })),
@@ -264,9 +265,9 @@ export function fromDetail(d: JewelryDetail, units: Units): PieceForm {
         sizeMm: numberToInput(s.sizeMm),
         totalCarat: numberToInput(s.totalCarat, 3),
         colorGrade: s.colorGrade ?? "",
-        clarityGrade: s.clarityGrade ?? "",
         setting: s.setting,
         supplierId: s.supplierId,
+        unitCost: s.unitCost === null ? "" : moneyToInput(s.unitCost),
         notes: s.notes ?? "",
       })),
     })),
@@ -318,6 +319,7 @@ export function validate(f: PieceForm): FormErrors {
       num(`${p}.quantity`, s.quantity, { positive: true, integer: true });
       num(`${p}.sizeMm`, s.sizeMm);
       num(`${p}.totalCarat`, s.totalCarat);
+      if (s.unitCost.trim() && parseMoney(s.unitCost) === null) e[`${p}.unitCost`] = "Enter an amount";
     });
   });
   f.costs.forEach((c, i) => {

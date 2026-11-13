@@ -3,6 +3,7 @@ import {
   lineTotal,
   orderTotals,
   pieceType,
+  stoneTotal,
   totalWeight,
   type Client,
   type Jewelry,
@@ -27,6 +28,14 @@ import type { Store } from "./store";
 /** Read models for screens. "Active" = not deleted; history lookups also include deleted/archived rows. */
 
 const ACTIVE = "deletedAt IS NULL AND purgedAt IS NULL";
+
+/** Total cost of a piece in SQL: its cost lines plus its priced stones. */
+const pieceCostSql = (jewelryId: string) => `(
+  COALESCE((SELECT SUM(ROUND(quantity * unitCost)) FROM jewelryCosts
+            WHERE jewelryId = ${jewelryId} AND deletedAt IS NULL), 0)
+  + COALESCE((SELECT SUM(s.quantity * s.unitCost) FROM jewelryStones s
+              JOIN jewelryComponents pc ON pc.id = s.componentId
+              WHERE pc.jewelryId = ${jewelryId} AND s.deletedAt IS NULL AND pc.deletedAt IS NULL), 0))`;
 const like = (s: string) => `%${s.replace(/[%_]/g, (m) => `\\${m}`)}%`;
 
 export type PageParams = { limit?: number; offset?: number; search?: string };
@@ -219,7 +228,7 @@ export async function listJewelry(store: Store, f: JewelryFilter = {}): Promise<
   }>(
     `SELECT j.id, j.code, j.description, j.origin, j.createdAt,
        (SELECT GROUP_CONCAT(type) FROM jewelryComponents WHERE jewelryId = j.id AND deletedAt IS NULL) AS types,
-       (SELECT SUM(ROUND(quantity * unitCost)) FROM jewelryCosts WHERE jewelryId = j.id AND deletedAt IS NULL) AS totalCost,
+       ${pieceCostSql("j.id")} AS totalCost,
        ${orderSub} AS orderId,
        im.localUri, im.storageKey
      FROM jewelries j
@@ -250,6 +259,8 @@ export type JewelryDetail = {
   pieceType: PieceType | null;
   components: (JewelryComponent & { stones: JewelryStone[] })[];
   costs: (JewelryCost & { supplierName: string | null; total: number })[];
+  /** Sum of all priced stones on the piece. */
+  stoneCost: number;
   images: (JewelryImage & { localUri: string | null })[];
   totalCost: number;
   totalWeightG: number | null;
@@ -279,13 +290,15 @@ export async function getJewelry(store: Store, id: string): Promise<JewelryDetai
      WHERE i.jewelryId = ? AND i.deletedAt IS NULL AND o.deletedAt IS NULL LIMIT 1`,
     [id],
   );
+  const stoneCost = stoneTotal(withStones.flatMap((c) => c.stones));
   return {
     jewelry,
     pieceType: pieceType(components.map((c) => c.type)),
     components: withStones,
     costs: costs.map((c) => ({ ...c, total: lineTotal(c.quantity, c.unitCost) })),
+    stoneCost,
     images: images.map((im) => ({ ...im, isPrimary: Boolean(im.isPrimary) })),
-    totalCost: costTotal(costs),
+    totalCost: costTotal(costs) + stoneCost,
     totalWeightG: totalWeight(jewelry, components),
     order: order ?? null,
   };
@@ -417,8 +430,7 @@ export async function monthlySummary(store: Store, year: number): Promise<MonthS
     `SELECT substr(o.orderDate, 1, 7) AS month,
        COUNT(DISTINCT o.id) AS orders,
        COALESCE(SUM(i.sellingPrice), 0) AS selling,
-       COALESCE(SUM((SELECT SUM(ROUND(quantity * unitCost)) FROM jewelryCosts c
-                     WHERE c.jewelryId = i.jewelryId AND c.deletedAt IS NULL)), 0) AS cost,
+       COALESCE(SUM(${pieceCostSql("i.jewelryId")}), 0) AS cost,
        (SELECT COALESCE(SUM(p.amount), 0) FROM payments p JOIN jobOrders o2 ON o2.id = p.jobOrderId
          WHERE substr(o2.orderDate, 1, 7) = substr(o.orderDate, 1, 7)
            AND p.deletedAt IS NULL AND o2.deletedAt IS NULL) AS paid

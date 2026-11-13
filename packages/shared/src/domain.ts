@@ -1,6 +1,6 @@
 import type { PIECE_TYPES } from "./enums";
 import { lineTotal } from "./money";
-import type { JewelryComponent, JewelryCost } from "./records";
+import type { JewelryComponent, JewelryCost, JewelryStone } from "./records";
 
 export type PieceType = (typeof PIECE_TYPES.values)[number];
 
@@ -15,6 +15,11 @@ export function pieceType(componentTypes: readonly JewelryComponent["type"][]): 
 
 export function costTotal(costs: readonly Pick<JewelryCost, "quantity" | "unitCost">[]): number {
   return costs.reduce((sum, c) => sum + lineTotal(c.quantity, c.unitCost), 0);
+}
+
+/** Stones are priced per stone; unpriced stones add nothing. */
+export function stoneTotal(stones: readonly Pick<JewelryStone, "quantity" | "unitCost">[]): number {
+  return stones.reduce((sum, s) => sum + s.quantity * (s.unitCost ?? 0), 0);
 }
 
 export function suggestedPrice(costMinor: number, markupPct: number): number {

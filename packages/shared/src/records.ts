@@ -135,8 +135,9 @@ export const fieldSchemas = {
     sizeMm: optMeasure,
     totalCarat: optMeasure,
     colorGrade: optText(10),
-    clarityGrade: optText(10),
     setting: e(STONE_SETTINGS).nullable(),
+    /** Price of one stone; the row costs quantity × unitCost. */
+    unitCost: money.nullable(),
     supplierId: optRef,
     materialId: optRef,
     notes: optText(2000),
