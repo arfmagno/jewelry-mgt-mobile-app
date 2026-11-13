@@ -9,7 +9,7 @@ import { ListToolbar } from "@/components/ListToolbar";
 import { EmptyState } from "@/components/layout";
 import { TabSwipe, type SwipeDirection } from "@/components/TabSwipe";
 import { Text } from "@/components/Text";
-import { monthLabel, MonthNavigator, thisMonth, YearNavigator } from "@/features/orders/MonthNavigator";
+import { monthLabel, PeriodNavigator, periodLabel, thisMonth, type Period } from "@/features/orders/PeriodNavigator";
 import { OrderRow } from "@/features/orders/OrderRow";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { MAX_CONTENT_WIDTH, TOUCH_TARGET, useLayout, useTheme } from "@/theme";
@@ -117,69 +117,35 @@ export default function OrdersScreen() {
   );
 }
 
-type Period = "month" | "year";
-
 /** One status: in-production orders all together; completed orders a month or a year at a time. */
 function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search: string; unpaid: boolean; onOpen: (id: string) => void }) {
   const { colors, radius } = useTheme();
   const { gutter } = useLayout();
-  const [period, setPeriod] = useState<Period>("month");
-  const [chosenMonth, setChosenMonth] = useState<string | null>(null);
-  const [chosenYear, setChosenYear] = useState<string | null>(null);
+  const [chosen, setChosen] = useState<Period | null>(null);
   const [limit, setLimit] = useState(PAGE_SIZE);
   const searching = search.trim() !== "";
   const browsing = status === "completed" && !searching;
 
   const { data: months } = useLiveQuery((s) => orderMonths(s, { status }), [status]);
   const { data: years } = useLiveQuery((s) => orderYears(s, { status }), [status]);
-  // Until one is chosen, open on the newest month or year with orders.
-  const month = chosenMonth ?? months?.[0]?.month ?? thisMonth();
-  const year = chosenYear ?? years?.[0]?.year ?? thisMonth().slice(0, 4);
-  const filter = !browsing ? {} : period === "month" ? { month } : { year };
+  // Until one is chosen, open on the newest month with orders.
+  const period: Period = chosen ?? { by: "month", month: months?.[0]?.month ?? thisMonth() };
+  const filter = !browsing ? {} : period.by === "month" ? { month: period.month } : { year: period.year };
   const { data, loading } = useLiveQuery(
     (s) => listOrders(s, { search, status, unpaid, ...filter, limit }),
-    [search, status, unpaid, browsing, period, month, year, limit],
+    [search, status, unpaid, browsing, filter.month, filter.year, limit],
   );
-  const summary = period === "month" ? months?.find((m) => m.month === month) : years?.find((y) => y.year === year);
-  const latest = period === "month" ? months?.[0]?.month : years?.[0]?.year;
-  const shown = period === "month" ? month : year;
-  const shownLabel = period === "month" ? monthLabel(month) : year;
-  const show = (value: string) => {
-    if (period === "month") setChosenMonth(value);
-    else setChosenYear(value);
+  const summary = period.by === "month" ? months?.find((m) => m.month === period.month) : years?.find((y) => y.year === period.year);
+  const latest: Period | null =
+    period.by === "month" ? (months?.[0] ? { by: "month", month: months[0].month } : null) : years?.[0] ? { by: "year", year: years[0].year } : null;
+  const show = (p: Period) => {
+    setChosen(p);
     setLimit(PAGE_SIZE);
   };
 
   const header = browsing ? (
     <View style={{ gap: 12, paddingBottom: 4 }}>
-      <View accessibilityRole="radiogroup" accessibilityLabel="Browse by" style={[styles.segments, { borderColor: colors.divider, borderRadius: radius.pill }]}>
-        {(["month", "year"] as const).map((p) => {
-          const on = period === p;
-          return (
-            <Pressable
-              key={p}
-              testID={`orders-by-${p}`}
-              accessibilityRole="radio"
-              accessibilityState={{ checked: on }}
-              accessibilityLabel={p === "month" ? "By month" : "By year"}
-              onPress={() => {
-                setPeriod(p);
-                setLimit(PAGE_SIZE);
-              }}
-              style={[styles.segment, { borderRadius: radius.pill, backgroundColor: on ? colors.text : "transparent" }]}
-            >
-              <Text variant="eyebrow" color={on ? colors.background : colors.textMuted}>
-                {p === "month" ? "Month" : "Year"}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      {period === "month" ? (
-        <MonthNavigator month={month} months={months ?? []} onChange={show} />
-      ) : (
-        <YearNavigator year={year} years={years ?? []} onChange={show} />
-      )}
+      <PeriodNavigator period={period} months={months ?? []} years={years ?? []} onChange={show} />
       <View style={{ flexDirection: "row", gap: 8 }}>
         {[
           ["Orders", String(summary?.orders ?? 0)],
@@ -207,7 +173,7 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
   return (
     <SectionList
       testID={`order-list-${status}`}
-      sections={group(data ?? [], browsing && period === "month" ? "day" : "month")}
+      sections={group(data ?? [], browsing && period.by === "month" ? "day" : "month")}
       keyExtractor={(o) => o.id}
       keyboardShouldPersistTaps="handled"
       stickySectionHeadersEnabled
@@ -235,14 +201,14 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
               searching
                 ? "No matching orders"
                 : browsing && latest
-                  ? `No completed orders in ${shownLabel}`
+                  ? `No completed orders in ${periodLabel(period)}`
                   : status === "in_production"
                     ? "Nothing in production"
                     : "No completed orders yet"
             }
             action={
-              browsing && latest && shown !== latest ? (
-                <Button label={`Go to ${period === "month" ? monthLabel(latest) : latest}`} variant="secondary" onPress={() => show(latest)} />
+              browsing && latest && periodLabel(latest) !== periodLabel(period) ? (
+                <Button label={`Go to ${periodLabel(latest)}`} variant="secondary" onPress={() => show(latest)} />
               ) : undefined
             }
           />
@@ -255,6 +221,4 @@ function OrdersPage({ status, search, unpaid, onOpen }: { status: Status; search
 const styles = StyleSheet.create({
   tabs: { flexDirection: "row", borderBottomWidth: StyleSheet.hairlineWidth },
   tab: { flex: 1, minHeight: TOUCH_TARGET, alignItems: "center", justifyContent: "center", borderBottomWidth: 3 },
-  segments: { flexDirection: "row", alignSelf: "center", borderWidth: StyleSheet.hairlineWidth, padding: 3 },
-  segment: { minHeight: 44, minWidth: 96, paddingHorizontal: 16, alignItems: "center", justifyContent: "center" },
 });
