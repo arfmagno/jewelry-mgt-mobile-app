@@ -66,7 +66,7 @@ export function Columns({ children }: { children: ReactNode }) {
   return (
     <View style={{ flexDirection: isTablet ? "row" : "column", gap: 16 }}>
       {Array.isArray(children)
-        ? children.map((c, i) => (
+        ? children.filter((c) => c !== null && c !== undefined && c !== false).map((c, i) => (
             <View key={i} style={isTablet ? { flex: 1 } : undefined}>
               {c}
             </View>
