@@ -8,6 +8,7 @@ import {
   listJewelry,
   listOrders,
   monthlySummary,
+  orderMonths,
   stockOnHand,
 } from "../src/queries";
 import { clientInput, ringDraft, testStore } from "./helpers";
@@ -193,5 +194,28 @@ describe("settings", () => {
     expect((await getSettings(store)).defaultMarkupPct).toBe(30);
     await saveSettings(store, { lengthUnit: "cm", materialTracking: true });
     expect(await getSettings(store)).toMatchObject({ lengthUnit: "cm", materialTracking: true, currency: "PHP" });
+  });
+});
+
+describe("browsing orders", () => {
+  it("filters by month and unpaid balance and summarises each month", async () => {
+    const { store } = await testStore();
+    const clientId = (await store.insert("clients", clientInput())).id;
+    const order = async (date: string, price: number, paid: number) => {
+      const pieceId = await saveJewelry(store, ringDraft());
+      const id = await saveJobOrder(store, { clientId, orderDate: date, status: "in_production", notes: null, items: [{ jewelryId: pieceId, sellingPrice: price }] });
+      if (paid) await store.insert("payments", { jobOrderId: id, amount: paid, paidAt: date, method: "cash", notes: null });
+      return id;
+    };
+    const marchPaid = await order("2026-03-02", 100_000, 100_000);
+    const marchOwing = await order("2026-03-20", 200_000, 50_000);
+    const april = await order("2026-04-01", 300_000, 0);
+
+    expect((await listOrders(store, { month: "2026-03" })).map((o) => o.id)).toEqual([marchOwing, marchPaid]);
+    expect((await listOrders(store, { unpaid: true })).map((o) => o.id)).toEqual([april, marchOwing]);
+    expect(await orderMonths(store)).toEqual([
+      { month: "2026-04", orders: 1, selling: 300_000, balance: 300_000 },
+      { month: "2026-03", orders: 2, selling: 300_000, balance: 150_000 },
+    ]);
   });
 });

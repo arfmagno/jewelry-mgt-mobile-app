@@ -306,6 +306,21 @@ export async function getJewelry(store: Store, id: string): Promise<JewelryDetai
 
 // ── Job orders ──────────────────────────────────────────────────────────
 
+const ORDER_SELLING = `COALESCE((SELECT SUM(sellingPrice) FROM jobOrderItems WHERE jobOrderId = o.id AND ${ACTIVE}), 0)`;
+const ORDER_PAID = `COALESCE((SELECT SUM(amount) FROM payments WHERE jobOrderId = o.id AND ${ACTIVE}), 0)`;
+
+export type OrderMonth = { month: string; orders: number; selling: number; balance: number };
+
+/** Months that have orders, newest first, with totals for browsing by month. */
+export async function orderMonths(store: Store): Promise<OrderMonth[]> {
+  return store.query<OrderMonth>(
+    `SELECT month, COUNT(*) AS orders, SUM(selling) AS selling, SUM(selling - paid) AS balance FROM (
+       SELECT substr(o.orderDate, 1, 7) AS month, ${ORDER_SELLING} AS selling, ${ORDER_PAID} AS paid
+       FROM jobOrders o WHERE o.deletedAt IS NULL AND o.purgedAt IS NULL)
+     GROUP BY month ORDER BY month DESC`,
+  );
+}
+
 export type OrderSummary = JobOrder & {
   clientName: string;
   itemCount: number;
@@ -316,10 +331,22 @@ export type OrderSummary = JobOrder & {
 
 export async function listOrders(
   store: Store,
-  f: PageParams & { status?: JobOrder["status"]; clientId?: string } = {},
+  f: PageParams & {
+    status?: JobOrder["status"];
+    clientId?: string;
+    /** Orders dated in this month (YYYY-MM). */
+    month?: string;
+    /** Only orders with a balance still to collect. */
+    unpaid?: boolean;
+  } = {},
 ): Promise<OrderSummary[]> {
   const params: SqlValue[] = [];
   let where = "o.deletedAt IS NULL AND o.purgedAt IS NULL";
+  if (f.month) {
+    where += " AND substr(o.orderDate, 1, 7) = ?";
+    params.push(f.month);
+  }
+  if (f.unpaid) where += ` AND ${ORDER_SELLING} > ${ORDER_PAID}`;
   if (f.status) {
     where += " AND o.status = ?";
     params.push(f.status);
@@ -336,8 +363,8 @@ export async function listOrders(
   const rows = await store.query<JobOrder & { clientName: string; itemCount: number; selling: number; paid: number }>(
     `SELECT o.*, c.firstName || ' ' || c.lastName AS clientName,
        (SELECT COUNT(*) FROM jobOrderItems WHERE jobOrderId = o.id AND ${ACTIVE}) AS itemCount,
-       COALESCE((SELECT SUM(sellingPrice) FROM jobOrderItems WHERE jobOrderId = o.id AND ${ACTIVE}), 0) AS selling,
-       COALESCE((SELECT SUM(amount) FROM payments WHERE jobOrderId = o.id AND ${ACTIVE}), 0) AS paid
+       ${ORDER_SELLING} AS selling,
+       ${ORDER_PAID} AS paid
      FROM jobOrders o LEFT JOIN clients c ON c.id = o.clientId
      WHERE ${where} ORDER BY o.orderDate DESC, o.createdAt DESC LIMIT ? OFFSET ?`,
     [...params, f.limit ?? 30, f.offset ?? 0],
