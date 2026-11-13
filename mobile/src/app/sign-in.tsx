@@ -43,7 +43,7 @@ export default function SignIn() {
       <Screen>
         <View style={{ gap: 8, marginTop: 48, marginBottom: 16 }}>
           <Text variant="display" color={colors.accent}>
-            Atelier
+            Hiyas
           </Text>
           <Text muted>Your jewelry records — available offline, synced when you are connected.</Text>
         </View>

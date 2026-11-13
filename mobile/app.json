@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Atelier",
-    "slug": "jewelry-atelier",
+    "name": "Hiyas",
+    "slug": "jewelry-hiyas",
     "scheme": "atelier",
     "version": "1.0.0",
     "orientation": "default",
@@ -45,8 +45,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Atelier to attach photos of your jewelry pieces.",
-          "cameraPermission": "Allow Atelier to take photos of your jewelry pieces."
+          "photosPermission": "Allow Hiyas to attach photos of your jewelry pieces.",
+          "cameraPermission": "Allow Hiyas to take photos of your jewelry pieces."
         }
       ],
       "@react-native-community/datetimepicker",

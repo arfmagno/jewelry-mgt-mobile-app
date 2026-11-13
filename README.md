@@ -1,9 +1,9 @@
-# Atelier — jewelry business records
+# Hiyas — jewelry business records
 
 [![CI](https://github.com/arfmagno/jewelry-mgt-mobile-app/actions/workflows/ci.yml/badge.svg)](https://github.com/arfmagno/jewelry-mgt-mobile-app/actions/workflows/ci.yml)
 [![E2E](https://github.com/arfmagno/jewelry-mgt-mobile-app/actions/workflows/e2e.yml/badge.svg)](https://github.com/arfmagno/jewelry-mgt-mobile-app/actions/workflows/e2e.yml)
 
-An offline-first Android app for running a small jewelry business: pieces (with their parts, stones, costs and photos), clients, job orders with down payments, suppliers, material purchases and stock, plus AI-generated design images from a text description.
+*Hiyas* is Tagalog for "jewel". It's an offline-first Android app for running a small jewelry business: pieces (with their parts, stones, costs and photos), clients, job orders with down payments, suppliers, material purchases and stock, plus AI-generated design images from a text description.
 
 It runs entirely on always-free cloud tiers and works without a connection. The phone's database is the source of truth, and changes sync in the background when the phone is online.
 

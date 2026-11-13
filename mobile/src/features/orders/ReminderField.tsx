@@ -23,7 +23,7 @@ export function ReminderField({ orderId, code, client, balance }: { orderId: str
       body: `${client} · ${code}`,
     }).catch(() => false);
     if (!ok) {
-      Alert.alert("Notifications are off", "Allow notifications for Atelier in your phone's settings to get reminders.");
+      Alert.alert("Notifications are off", "Allow notifications for Hiyas in your phone's settings to get reminders.");
       return;
     }
     setDate(next);
