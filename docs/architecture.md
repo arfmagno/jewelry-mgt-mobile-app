@@ -25,7 +25,7 @@
 - **Offline-first.** Every read and write goes to the on-device SQLite database. The network is only used to sync, upload photos, and generate AI designs. The app never waits on the server to show or save data.
 - **One schema, three places.** `@jewelry/shared` defines every table once, as zod schemas. The device store, the sync protocol and the server all validate with them.
 - **Always-free hosting.** Each service is used within a permanent free tier. Infrastructure tests fail the build if provisioned capacity goes over free-tier limits or a paid-by-default service (API Gateway, NAT, RDS, Secrets Manager, S3) appears.
-- **Thin server.** The Lambda authenticates, applies last-write-wins, assigns human-readable codes, and signs URLs. Business rules live in `@jewelry/core` on the device.
+- **Thin server.** The Lambda authenticates, applies last-write-wins, keeps its code counter ahead of codes numbered on devices, and signs URLs. Business rules live in `@jewelry/core` on the device.
 
 ## Packages
 

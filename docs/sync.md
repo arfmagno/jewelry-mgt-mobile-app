@@ -19,7 +19,7 @@ Every write goes through `Store` in `@jewelry/core`:
 2. **Push**: outbox records are sent in batches of up to 100.
    - The server applies **last-write-wins** on the client `updatedAt` and stamps `serverUpdatedAt`.
    - A purged record is terminal: nothing overwrites a tombstone.
-   - New pieces and orders receive their human-readable code from a per-user atomic counter.
+   - Pieces and orders are numbered on the device when created (`JW-00001`, `JO-00001`). The server keeps those codes and moves its per-user counter past them; it only issues a code itself for a record that arrives without one.
    - Each record is acknowledged as `applied` or `stale`. The device takes the server code and clears the outbox entry, unless the record changed again while the request was in flight.
 3. **Pull**: everything changed since the last seen `serverUpdatedAt` is fetched in pages of up to 500.
    - The cursor goes back 60 seconds to cover writes that landed out of order.
@@ -52,5 +52,5 @@ Pull queries `GSI1` for `GSI1SK > since`. Writes use conditional puts with a few
 ## Guarantees and limits
 
 - Convergence is per record: the newest `updatedAt` wins as a whole record, with no field-level merging. This suits a single user on one or two devices.
-- Codes are unique per user and never reused. Until a record has synced once it shows *New*.
+- Codes are shown immediately, even offline. With a single device they are unique and never reused; two devices creating records offline at the same time could pick the same number.
 - Integration tests (`packages/core/test/integration`) run two devices against the real handler and a DynamoDB emulator. They cover codes, conflicts, deletes and tombstones.

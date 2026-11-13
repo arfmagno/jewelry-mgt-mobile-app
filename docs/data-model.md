@@ -33,7 +33,7 @@ suppliers ──< purchases ──< purchaseLines >── materials ──< stoc
 
 | Table | Notes |
 |---|---|
-| `jewelries` | One sellable piece or set. `code` (`JW-00001`) is assigned by the server on first sync. `origin` is `on_hand` (made for stock) or `made_to_order`. `manufactureDate` lives on the piece, because on-hand pieces exist before any order. When `sameMetalForAll` is set, metal, purity, colour and total weight are stored on the piece. |
+| `jewelries` | One sellable piece or set. `code` (`JW-00001`) is numbered on the device when the piece is created. `origin` is `on_hand` (made for stock) or `made_to_order`. `manufactureDate` lives on the piece, because on-hand pieces exist before any order. When `sameMetalForAll` is set, metal, purity, colour and total weight are stored on the piece. |
 | `jewelryComponents` | The parts of a piece: `ring`, `earrings`, `pendant`, `chain`, `bracelet`. A necklace is a pendant plus a chain; a set is several parts. Type-specific fields: ring size, earring back, chain/bracelet style, length, width. Metal fields are used when parts differ. |
 | `jewelryStones` | Stones set on a specific part: kind (natural or lab-grown diamond, moissanite, cubic zirconia, coloured gemstone), shape, count, size, total carat, colour grade, setting style, supplier and price per stone. A piece's cost is its cost lines plus its priced stones. |
 | `jewelryCosts` | Cost lines other than stones: metal (by weight, optionally from a supplier and stock material), labor, plating/*tubog*, engraving, and other, each with an optional description. |
@@ -46,7 +46,7 @@ The piece type shown in lists (ring, necklace, set…) is derived from its parts
 | Table | Notes |
 |---|---|
 | `clients` | Name, phone, optional address and notes. |
-| `jobOrders` | Client, order date, manual status (`in_production` / `completed`), server-assigned `code` (`JO-00001`). |
+| `jobOrders` | Client, order date, manual status (`in_production` / `completed`), `code` (`JO-00001`) numbered on the device. |
 | `jobOrderItems` | A piece in an order, with its selling price. A piece belongs to at most one active order. |
 | `payments` | Down payments and later payments: amount, date, method (cash, GCash, Maya, bank transfer, card, other). |
 
