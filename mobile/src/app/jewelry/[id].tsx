@@ -128,7 +128,10 @@ export default function JewelryDetailScreen() {
         </Section>
 
         <Section title="Costs">
-          {detail.costs.length === 0 ? (
+          {detail.stoneCost > 0 ? (
+            <ListRow icon="diamond-outline" title="Stones" subtitle="Priced per stone" trailing={<Text variant="money">{formatMoney(detail.stoneCost)}</Text>} />
+          ) : null}
+          {detail.costs.length === 0 && detail.stoneCost === 0 ? (
             <Text muted>No costs recorded yet.</Text>
           ) : (
             detail.costs.map((c) => (
