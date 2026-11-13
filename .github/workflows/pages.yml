@@ -1,0 +1,63 @@
+name: Web demo
+
+# Publishes the app to GitHub Pages as an offline demo: no backend, filled
+# with sample records on first open, and everything stays in the visitor's
+# browser.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      BASE: /${{ github.event.repository.name }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Export the web app
+        working-directory: mobile
+        run: npx expo export --platform web --output-dir dist
+        env:
+          EXPO_PUBLIC_DEMO: "1"
+          WEB_BASE_URL: ${{ env.BASE }}
+      - name: Prepare for GitHub Pages
+        working-directory: mobile/dist
+        run: |
+          # SQLite runs in a worker that needs a cross-origin isolated page. Pages
+          # can't send the headers, so a service worker adds them (one reload on
+          # the first visit).
+          sed -i "s#<head>#<head><script src=\"$BASE/coi-serviceworker.js\"></script>#" index.html
+          grep -q coi-serviceworker index.html
+          # Deep links such as /orders/<id> load the app, which then routes.
+          cp index.html 404.html
+          # Expo's generated folders start with an underscore.
+          touch .nojekyll
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: mobile/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
