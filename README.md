@@ -18,7 +18,8 @@ It runs entirely on always-free cloud tiers and works without a connection. The 
 
 - **Pieces**: rings, earrings, pendants, chains, bracelets, and sets made of several parts. Each part has its own measurements, metal (or one metal for the whole piece), and the stones set on it. Pieces are either on-hand stock or made to order.
 - **Costs**: metal by weight (with the latest supplier price filled in), labor, plating/*tubog*, engraving and other costs, plus a price on each stone. The app suggests a selling price from cost and a default markup.
-- **Job orders**: a client, one or more pieces, manual status (in production / completed), down payments and balance, and profit per order.
+- **Job orders**: a client, one or more pieces, manual status (in production / completed), down payments and balance, and profit per order. Completed orders are browsed a month or a year at a time, with totals for each.
+- **Clients**: grouped by surname, with how many orders each has and what they still owe.
 - **Photos & AI designs**: photos are compressed on the device (WebP, ≤1600 px) and uploaded when online. You can generate design drafts from a description, keep the ones you like and discard the rest.
 - **Suppliers, purchases and materials**: purchase history gives the latest price per material. Optional stock tracking counts purchases, adjustments, and usage in pieces.
 - **Trash**: deletes are reversible for 7 days. After that a record is removed, or archived if order history still refers to it.

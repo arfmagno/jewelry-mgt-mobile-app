@@ -40,7 +40,8 @@ Tokens live in `mobile/src/theme/tokens.ts`. Components never hard-code colours.
 | Error identification (3.3.1) | Field errors appear next to the field as one live, polite alert with an icon and text |
 | Status messages (4.1.3) | Validation summaries and finished AI designs are announced; field errors and the report year use live regions |
 | Charts | Report bars are decorative; each month is one accessible element that reads its exact figures |
-| Motion | With the system *reduce motion* setting on, modals open without sliding and images appear without fading |
+| Motion | With the system *reduce motion* setting on, modals open without sliding, tabs change without sliding and images appear without fading |
+| Gestures (2.5.1) | Swiping sideways between tabs is a shortcut; every page is also reachable with a single tap on the tab bar or the section tabs |
 
 Automated checks: `mobile/src/components/__tests__` asserts roles, labels, states and error announcements with React Native Testing Library.
 
