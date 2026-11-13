@@ -46,3 +46,41 @@ export function JewelryCard({ item, onPress }: { item: JewelrySummary; onPress: 
     </Pressable>
   );
 }
+
+/** Compact one-line version of the card for list view. */
+export function JewelryRow({ item, onPress }: { item: JewelrySummary; onPress: () => void }) {
+  const { colors, radius } = useTheme();
+  const status = item.availability === "in_order" ? "In an order" : item.origin === "on_hand" ? "Available" : "Made to order";
+  return (
+    <Pressable
+      testID={`jewelry-row-${item.id}`}
+      accessibilityRole="button"
+      accessibilityLabel={`${pieceLabel(item)}. ${item.description}. ${status}. Cost ${formatMoney(item.totalCost)}`}
+      onPress={onPress}
+      style={({ pressed }) => ({
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 12,
+        padding: 8,
+        borderRadius: radius.lg,
+        borderWidth: 1,
+        borderColor: colors.divider,
+        backgroundColor: pressed ? colors.accentSoft : colors.surface,
+      })}
+    >
+      <Thumb image={item.image} size={64} kind={item.pieceType} />
+      <View style={{ flex: 1, gap: 2 }}>
+        <Text variant="caption" color={colors.accent}>
+          {pieceLabel(item)}
+        </Text>
+        <Text>{item.description}</Text>
+        <Text variant="caption" muted>
+          {status}
+        </Text>
+      </View>
+      <Text variant="money" style={{ fontSize: 14 }}>
+        {formatMoney(item.totalCost)}
+      </Text>
+    </Pressable>
+  );
+}
