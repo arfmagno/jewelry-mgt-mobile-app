@@ -9,6 +9,7 @@ import { pieceLabel } from "@/components/JewelryCard";
 import { Card, Columns, Detail, EmptyState, ListRow, Loading, Screen, Section, Thumb } from "@/components/layout";
 import { Text } from "@/components/Text";
 import { PaymentForm } from "@/features/orders/PaymentForm";
+import { shareReceipt } from "@/features/orders/receipt";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { fullName, percent } from "@/lib/format";
 import { useStore } from "@/providers/app";
@@ -62,7 +63,10 @@ export default function OrderDetailScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <IconButton icon="create-outline" label="Edit order" onPress={() => router.push({ pathname: "/orders/edit", params: { id: order.id } })} />
+            <View style={{ flexDirection: "row" }}>
+              <IconButton testID="share-receipt" icon="share-outline" label="Share receipt" onPress={() => shareReceipt(d).catch(() => Alert.alert("Can't share the receipt", "Please try again."))} />
+              <IconButton icon="create-outline" label="Edit order" onPress={() => router.push({ pathname: "/orders/edit", params: { id: order.id } })} />
+            </View>
           ),
         }}
       />
