@@ -102,7 +102,7 @@ export function Card({ children, style }: { children: ReactNode; style?: ViewSty
   return (
     <View
       style={[
-        { backgroundColor: colors.surface, borderRadius: radius.lg, borderColor: colors.divider, borderWidth: 1, padding: 16, gap: 8 },
+        { backgroundColor: colors.surface, borderRadius: radius.lg, borderColor: colors.divider, borderWidth: StyleSheet.hairlineWidth, padding: 16, gap: 8 },
         style,
       ]}
     >
@@ -131,9 +131,13 @@ export function ListRow({
   const { colors, radius } = useTheme();
   const content = (
     <>
-      {icon ? <Ionicons name={icon} size={22} color={colors.accent} accessibilityElementsHidden /> : null}
+      {icon ? (
+        <View style={[styles.rowIcon, { borderColor: colors.gold[1], backgroundColor: colors.background }]}>
+          <Ionicons name={icon} size={20} color={colors.accent} accessibilityElementsHidden />
+        </View>
+      ) : null}
       <View style={{ flex: 1, gap: 2 }}>
-        <Text variant="body" numberOfLines={2}>
+        <Text variant="heading" numberOfLines={2} style={{ fontSize: 19, lineHeight: 24 }}>
           {title}
         </Text>
         {subtitle ? (
@@ -146,7 +150,7 @@ export function ListRow({
       {onPress ? <Ionicons name="chevron-forward" size={18} color={colors.textMuted} accessibilityElementsHidden /> : null}
     </>
   );
-  const style = [styles.row, { backgroundColor: colors.surface, borderColor: colors.divider, borderRadius: radius.md }];
+  const style = [styles.row, { backgroundColor: colors.surface, borderColor: colors.divider, borderRadius: radius.lg }];
   if (!onPress) return <View style={style}>{content}</View>;
   return (
     <Pressable
@@ -165,11 +169,14 @@ export function ListRow({
 export function Detail({ label, value }: { label: string; value: ReactNode }) {
   if (value === null || value === undefined || value === "") return null;
   return (
+    // A spec sheet line: label on the left in spaced capitals, value on the right.
     <View style={styles.detail} accessible>
-      <Text variant="caption" muted style={{ minWidth: 120 }}>
+      <Text variant="eyebrow" muted style={{ flexShrink: 0, maxWidth: "45%" }}>
         {label}
       </Text>
-      {typeof value === "string" || typeof value === "number" ? <Text style={{ flex: 1 }}>{value}</Text> : value}
+      <View style={{ flex: 1, alignItems: "flex-end" }}>
+        {typeof value === "string" || typeof value === "number" ? <Text align="right">{value}</Text> : value}
+      </View>
     </View>
   );
 }
@@ -301,17 +308,18 @@ export function Grid<T>({
 const styles = StyleSheet.create({
   column: { width: "100%", alignSelf: "center" },
   footer: { borderTopWidth: StyleSheet.hairlineWidth, paddingVertical: 12 },
-  sectionHeader: { flexDirection: "row", alignItems: "center", borderBottomWidth: 1, paddingBottom: 6, minHeight: TOUCH_TARGET },
+  sectionHeader: { flexDirection: "row", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth, paddingBottom: 6, minHeight: TOUCH_TARGET },
   row: {
     minHeight: TOUCH_TARGET + 16,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 12,
-    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 14,
+    borderWidth: StyleSheet.hairlineWidth,
   },
-  detail: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingVertical: 4 },
+  rowIcon: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  detail: { flexDirection: "row", alignItems: "baseline", gap: 12, paddingVertical: 6 },
   badge: { flexDirection: "row", alignItems: "center", gap: 4, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 2, alignSelf: "flex-start" },
   empty: { alignItems: "center", justifyContent: "center", gap: 12, padding: 32 },
   thumbEmpty: { alignItems: "center", justifyContent: "center" },
