@@ -45,7 +45,7 @@ export function Screen({
         testID={testID}
         keyboardShouldPersistTaps="handled"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ paddingHorizontal: gutter, paddingVertical: space.lg, paddingBottom: 96 }}
+        contentContainerStyle={{ paddingHorizontal: gutter, paddingVertical: space.lg, paddingBottom: space.xl }}
       >
         <View style={[styles.column, { maxWidth: wide ? undefined : MAX_CONTENT_WIDTH, gap: space.lg }]}>
           {children}

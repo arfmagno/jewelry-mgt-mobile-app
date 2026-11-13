@@ -1,9 +1,9 @@
 import { listSuppliers } from "@jewelry/core";
 import { formatPhPhone } from "@jewelry/shared";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
-import { Fab } from "@/components/Button";
+import { IconButton } from "@/components/Button";
 import { TextField } from "@/components/fields";
 import { EmptyState, ListRow, Screen } from "@/components/layout";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
@@ -14,6 +14,11 @@ export default function SuppliersScreen() {
   const { data, loading } = useLiveQuery((s) => listSuppliers(s, { search, limit: 500 }), [search]);
   return (
     <View style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          headerRight: () => <IconButton testID="add-supplier" icon="add" label="New supplier" onPress={() => router.push("/suppliers/edit")} />,
+        }}
+      />
       <Screen>
         <TextField label="Search suppliers" value={search} onChangeText={setSearch} autoCorrect={false} />
         {!loading && data?.length === 0 ? (
@@ -30,7 +35,6 @@ export default function SuppliersScreen() {
           ))
         )}
       </Screen>
-      <Fab label="New supplier" onPress={() => router.push("/suppliers/edit")} />
     </View>
   );
 }

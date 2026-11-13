@@ -1,8 +1,8 @@
 import { listPurchases } from "@jewelry/core";
 import { formatMoney } from "@jewelry/shared";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { View } from "react-native";
-import { Fab } from "@/components/Button";
+import { IconButton } from "@/components/Button";
 import { formatDate } from "@/components/fields";
 import { EmptyState, ListRow, Screen } from "@/components/layout";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
@@ -12,6 +12,11 @@ export default function PurchasesScreen() {
   const { data, loading } = useLiveQuery((s) => listPurchases(s, { limit: 300 }), []);
   return (
     <View style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          headerRight: () => <IconButton testID="add-purchase" icon="add" label="New purchase" onPress={() => router.push("/purchases/edit")} />,
+        }}
+      />
       <Screen>
         {!loading && data?.length === 0 ? (
           <EmptyState icon="cart-outline" title="No purchases yet" body="Record what you buy from suppliers; the latest price fills in piece costs." />
@@ -27,7 +32,6 @@ export default function PurchasesScreen() {
           ))
         )}
       </Screen>
-      <Fab label="New purchase" onPress={() => router.push("/purchases/edit")} />
     </View>
   );
 }

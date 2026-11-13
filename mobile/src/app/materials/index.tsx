@@ -1,9 +1,9 @@
 import { listMaterials } from "@jewelry/core";
 import { MATERIAL_KINDS, UNITS } from "@jewelry/shared";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
-import { Fab } from "@/components/Button";
+import { IconButton } from "@/components/Button";
 import { TextField } from "@/components/fields";
 import { Badge, EmptyState, ListRow, Screen } from "@/components/layout";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
@@ -19,6 +19,11 @@ export default function MaterialsScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          headerRight: () => <IconButton testID="add-material" icon="add" label="New material" onPress={() => router.push("/materials/edit")} />,
+        }}
+      />
       <Screen>
         <TextField label="Search materials" value={search} onChangeText={setSearch} autoCorrect={false} />
         {!loading && data?.length === 0 ? (
@@ -39,7 +44,6 @@ export default function MaterialsScreen() {
           ))
         )}
       </Screen>
-      <Fab label="New material" onPress={() => router.push("/materials/edit")} />
     </View>
   );
 }
