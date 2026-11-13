@@ -80,5 +80,7 @@ name: piece-and-order
 - back
 - tapOn: "Pieces"
 - assertNotVisible: "Solitaire engagement ring"
+- tapOn:
+    id: "toggle-filters"
 - tapOn: "In an order"
 - assertVisible: "Solitaire engagement ring"
