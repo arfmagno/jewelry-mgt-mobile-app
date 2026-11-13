@@ -61,17 +61,18 @@ export default function OrderDetailScreen() {
     <>
       <Stack.Screen
         options={{
-          title,
           headerRight: () => (
             <IconButton icon="create-outline" label="Edit order" onPress={() => router.push({ pathname: "/orders/edit", params: { id: order.id } })} />
           ),
         }}
       />
       <Screen testID="order-detail">
-        <View style={{ gap: 4 }}>
-          <Text variant="title">{title}</Text>
-          <Text muted>
-            {fullName(d.client)} · {formatDate(order.orderDate)}
+        <View style={{ gap: 8 }}>
+          <Text variant="eyebrow" color={colors.accent}>
+            {title} · {formatDate(order.orderDate)}
+          </Text>
+          <Text variant="title" accessibilityRole="header">
+            {fullName(d.client)}
           </Text>
         </View>
         <ChoiceChips

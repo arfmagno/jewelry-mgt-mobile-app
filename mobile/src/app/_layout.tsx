@@ -58,7 +58,7 @@ export default function RootLayout() {
 }
 
 function Navigator() {
-  const { colors, fonts, scheme } = useTheme();
+  const { colors, scheme } = useTheme();
   const { authState } = useApp();
 
   useEffect(() => {
@@ -74,8 +74,14 @@ function Navigator() {
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.accent,
-          headerTitleStyle: { fontFamily: fonts.display, color: colors.text, fontSize: 22 },
+          headerTintColor: colors.text,
+          // Small spaced capitals: the page itself carries the large title.
+          headerTitle: ({ children }) => (
+            <Text variant="eyebrow" style={{ fontSize: 12 }} numberOfLines={1}>
+              {children}
+            </Text>
+          ),
+          headerTitleAlign: "center",
           headerShadowVisible: false,
           contentStyle: { backgroundColor: colors.background },
           headerBackButtonDisplayMode: "minimal",

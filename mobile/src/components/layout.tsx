@@ -18,7 +18,7 @@ import { useImageSource } from "@/hooks/useImageSource";
 import { MAX_CONTENT_WIDTH, TOUCH_TARGET, useLayout, useTheme } from "@/theme";
 import type { IconName } from "./Button";
 import { JewelryGlyph } from "./illustrations";
-import { Stage } from "./gold";
+import { Stage } from "./Stage";
 import { Text } from "./Text";
 
 /** Scrollable page, centred with a readable max width on tablets. */
@@ -98,11 +98,12 @@ export function Section({ title, action, children }: { title: string; action?: R
 }
 
 export function Card({ children, style }: { children: ReactNode; style?: ViewStyle }) {
-  const { colors, radius } = useTheme();
+  const { colors } = useTheme();
   return (
     <View
       style={[
-        { backgroundColor: colors.surface, borderRadius: radius.lg, borderColor: colors.divider, borderWidth: StyleSheet.hairlineWidth, padding: 16, gap: 8 },
+        // An open panel closed by a hairline rather than a box.
+        { borderColor: colors.divider, borderBottomWidth: StyleSheet.hairlineWidth, paddingBottom: 12, gap: 4 },
         style,
       ]}
     >
@@ -128,11 +129,11 @@ export function ListRow({
   accessibilityLabel?: string;
   testID?: string;
 }) {
-  const { colors, radius } = useTheme();
+  const { colors } = useTheme();
   const content = (
     <>
       {icon ? (
-        <View style={[styles.rowIcon, { borderColor: colors.gold[1], backgroundColor: colors.background }]}>
+        <View style={[styles.rowIcon, { borderColor: colors.gold }]}>
           <Ionicons name={icon} size={20} color={colors.accent} accessibilityElementsHidden />
         </View>
       ) : null}
@@ -150,7 +151,7 @@ export function ListRow({
       {onPress ? <Ionicons name="chevron-forward" size={18} color={colors.textMuted} accessibilityElementsHidden /> : null}
     </>
   );
-  const style = [styles.row, { backgroundColor: colors.surface, borderColor: colors.divider, borderRadius: radius.lg }];
+  const style = [styles.row, { borderColor: colors.divider }];
   if (!onPress) return <View style={style}>{content}</View>;
   return (
     <Pressable
@@ -181,14 +182,18 @@ export function Detail({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-/** Status pill: always carries text, never colour alone. */
+/** Status: an icon or small dot with a word in spaced capitals; always carries text, never colour alone. */
 export function Badge({ label, tone = "neutral", icon }: { label: string; tone?: "neutral" | "accent" | "success" | "warning" | "danger"; icon?: IconName }) {
-  const { colors, radius } = useTheme();
+  const { colors } = useTheme();
   const fg = { neutral: colors.textMuted, accent: colors.accent, success: colors.success, warning: colors.warning, danger: colors.danger }[tone];
   return (
-    <View style={[styles.badge, { borderColor: fg, borderRadius: radius.pill }]}>
-      {icon ? <Ionicons name={icon} size={12} color={fg} accessibilityElementsHidden /> : null}
-      <Text variant="caption" color={fg} style={{ fontSize: 12 }}>
+    <View style={styles.badge}>
+      {icon ? (
+        <Ionicons name={icon} size={12} color={fg} accessibilityElementsHidden />
+      ) : (
+        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: fg }} />
+      )}
+      <Text variant="eyebrow" color={fg} style={{ letterSpacing: 1 }}>
         {label}
       </Text>
     </View>
@@ -255,7 +260,7 @@ export function Thumb({
   if (!uri) {
     return (
       <View
-        style={[box, styles.thumbEmpty, { borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold[1], overflow: "hidden" }]}
+        style={[box, styles.thumbEmpty, { borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold, overflow: "hidden" }]}
         accessibilityLabel={label ? `${label}, no photo` : undefined}
         accessible={!!label}
       >
@@ -313,14 +318,14 @@ const styles = StyleSheet.create({
     minHeight: TOUCH_TARGET + 16,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 14,
-    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 2,
+    paddingVertical: 14,
+    gap: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   rowIcon: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   detail: { flexDirection: "row", alignItems: "baseline", gap: 12, paddingVertical: 6 },
-  badge: { flexDirection: "row", alignItems: "center", gap: 4, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 2, alignSelf: "flex-start" },
+  badge: { flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start" },
   empty: { alignItems: "center", justifyContent: "center", gap: 12, padding: 32 },
   thumbEmpty: { alignItems: "center", justifyContent: "center" },
   grid: { flexDirection: "row", flexWrap: "wrap", marginHorizontal: -6 },

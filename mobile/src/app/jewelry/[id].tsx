@@ -48,7 +48,6 @@ export default function JewelryDetailScreen() {
     <>
       <Stack.Screen
         options={{
-          title,
           headerRight: () => (
             <IconButton testID="edit-piece" icon="create-outline" label="Edit piece" onPress={() => router.push({ pathname: "/jewelry/edit", params: { id: j.id } })} />
           ),
@@ -68,10 +67,14 @@ export default function JewelryDetailScreen() {
           </ScrollView>
         ) : null}
 
-        <View style={{ gap: 6 }}>
-          <Text variant="title">{title}</Text>
-          <Text>{j.description}</Text>
-          <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+        <View style={{ gap: 8 }}>
+          <Text variant="eyebrow" color={colors.accent}>
+            {title}
+          </Text>
+          <Text variant="title" accessibilityRole="header">
+            {j.description}
+          </Text>
+          <View style={{ flexDirection: "row", gap: 16, flexWrap: "wrap" }}>
             <Badge label={ORIGINS.labels[j.origin]} />
             {detail.order ? <Badge label={`In ${detail.order.code ?? "an order"}`} tone="accent" icon="receipt-outline" /> : null}
           </View>
