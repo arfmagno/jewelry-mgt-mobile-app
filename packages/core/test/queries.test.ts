@@ -8,6 +8,7 @@ import {
   listJewelry,
   listOrders,
   monthlySummary,
+  orderCounts,
   orderMonths,
   stockOnHand,
 } from "../src/queries";
@@ -217,5 +218,9 @@ describe("browsing orders", () => {
       { month: "2026-04", orders: 1, selling: 300_000, balance: 300_000 },
       { month: "2026-03", orders: 2, selling: 300_000, balance: 150_000 },
     ]);
+
+    await store.update("jobOrders", marchPaid, { status: "completed" });
+    expect(await orderCounts(store)).toEqual({ in_production: 2, completed: 1 });
+    expect(await orderMonths(store, { status: "completed" })).toEqual([{ month: "2026-03", orders: 1, selling: 100_000, balance: 0 }]);
   });
 });

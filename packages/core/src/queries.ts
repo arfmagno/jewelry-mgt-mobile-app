@@ -311,14 +311,23 @@ const ORDER_PAID = `COALESCE((SELECT SUM(amount) FROM payments WHERE jobOrderId 
 
 export type OrderMonth = { month: string; orders: number; selling: number; balance: number };
 
-/** Months that have orders, newest first, with totals for browsing by month. */
-export async function orderMonths(store: Store): Promise<OrderMonth[]> {
+/** Months that have orders (optionally of one status), newest first, with totals for browsing by month. */
+export async function orderMonths(store: Store, f: { status?: JobOrder["status"] } = {}): Promise<OrderMonth[]> {
   return store.query<OrderMonth>(
     `SELECT month, COUNT(*) AS orders, SUM(selling) AS selling, SUM(selling - paid) AS balance FROM (
        SELECT substr(o.orderDate, 1, 7) AS month, ${ORDER_SELLING} AS selling, ${ORDER_PAID} AS paid
-       FROM jobOrders o WHERE o.deletedAt IS NULL AND o.purgedAt IS NULL)
+       FROM jobOrders o WHERE o.deletedAt IS NULL AND o.purgedAt IS NULL${f.status ? " AND o.status = ?" : ""})
      GROUP BY month ORDER BY month DESC`,
+    f.status ? [f.status] : [],
   );
+}
+
+/** Number of orders in each status. */
+export async function orderCounts(store: Store): Promise<Record<JobOrder["status"], number>> {
+  const rows = await store.query<{ status: JobOrder["status"]; n: number }>(
+    "SELECT status, COUNT(*) AS n FROM jobOrders WHERE deletedAt IS NULL AND purgedAt IS NULL GROUP BY status",
+  );
+  return { in_production: 0, completed: 0, ...Object.fromEntries(rows.map((r) => [r.status, r.n])) };
 }
 
 export type OrderSummary = JobOrder & {
