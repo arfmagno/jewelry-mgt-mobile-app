@@ -43,6 +43,21 @@ export function formatRingSize(diameterMm: number, system: RingSizeSystem): stri
   return system === "us" ? `US ${trim(size)}` : `${trim(size)} mm`;
 }
 
+const range = (from: number, to: number, step: number) =>
+  Array.from({ length: Math.round((to - from) / step) + 1 }, (_, i) => from + i * step);
+
+/** Sizes offered in pickers: US whole and half sizes, ISO whole millimetres. */
+export const RING_SIZES: Record<RingSizeSystem, readonly number[]> = {
+  us: range(3, 13, 0.5),
+  iso: range(44, 72, 1),
+};
+
+/** The listed size closest to a stored diameter, so older or converted values still match an option. */
+export function nearestRingSize(diameterMm: number, system: RingSizeSystem): number {
+  const exact = system === "us" ? (diameterMm - 11.63) / 0.8128 : Math.PI * diameterMm;
+  return RING_SIZES[system].reduce((best, s) => (Math.abs(s - exact) < Math.abs(best - exact) ? s : best));
+}
+
 function trim(n: number): string {
   return Number(n.toFixed(2)).toString();
 }

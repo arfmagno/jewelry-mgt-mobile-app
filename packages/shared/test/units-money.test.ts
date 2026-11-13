@@ -5,6 +5,8 @@ import {
   formatRingSize,
   lengthToMm,
   mmToLength,
+  nearestRingSize,
+  RING_SIZES,
   ringSizeFromMm,
   ringSizeToMm,
 } from "../src/units";
@@ -26,6 +28,16 @@ describe("ring sizes", () => {
     expect(ringSizeToMm(7, "us")).toBeCloseTo(17.32, 2);
     expect(ringSizeFromMm(17.32, "us")).toBe(7);
     expect(ringSizeFromMm(ringSizeToMm(6.5, "us"), "us")).toBe(6.5);
+  });
+
+  it("lists picker sizes and snaps stored values to the nearest one", () => {
+    expect(RING_SIZES.us[0]).toBe(3);
+    expect(RING_SIZES.us.at(-1)).toBe(13);
+    expect(RING_SIZES.us).toContain(6.5);
+    expect(RING_SIZES.iso).toContain(52);
+    expect(nearestRingSize(ringSizeToMm(6.3, "us"), "us")).toBe(6.5);
+    expect(nearestRingSize(ringSizeToMm(7, "us"), "us")).toBe(7);
+    expect(nearestRingSize(ringSizeToMm(52.4, "iso"), "iso")).toBe(52);
   });
 
   it("uses inner circumference for ISO", () => {

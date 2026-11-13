@@ -16,6 +16,7 @@ import { Text } from "@/components/Text";
 import { useTheme } from "@/theme";
 import { emptyStone, FIELDS_BY_TYPE, type ComponentForm, type FormErrors, type StoneForm } from "./form";
 import { MetalFields } from "./MetalFields";
+import { RingSizeField } from "./RingSizeField";
 
 type Props = {
   index: number;
@@ -48,13 +49,7 @@ export function PartEditor({ index, part, ownMetal, units, suppliers, errors, on
 
       <Columns>
         {applies.ringSize ? (
-          <NumberField
-            label={units.ringSizeSystem === "us" ? "Ring size (US)" : "Ring size (ISO, mm)"}
-            hint={units.ringSizeSystem === "us" ? "Quarter sizes allowed, e.g. 6.25" : "Inner circumference in mm"}
-            value={part.ringSize}
-            onChangeText={(ringSize) => onChange({ ringSize })}
-            error={errors[`${p}ringSize`]}
-          />
+          <RingSizeField system={units.ringSizeSystem} value={part.ringSize} onChange={(ringSize) => onChange({ ringSize })} error={errors[`${p}ringSize`]} />
         ) : null}
         {applies.length ? (
           <NumberField
