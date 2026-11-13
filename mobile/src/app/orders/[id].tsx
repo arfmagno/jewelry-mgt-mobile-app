@@ -106,7 +106,7 @@ export default function OrderDetailScreen() {
               key={i.itemId}
               title={`${pieceLabel(i.jewelry)} · ${i.jewelry.description}`}
               subtitle={`Selling ${formatMoney(i.sellingPrice)} · cost ${formatMoney(i.cost)}`}
-              trailing={<Thumb image={i.jewelry.image} size={48} />}
+              trailing={<Thumb image={i.jewelry.image} size={48} kind={i.jewelry.pieceType} />}
               onPress={() => router.push(`/jewelry/${i.jewelry.id}`)}
             />
           ))}

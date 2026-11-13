@@ -159,7 +159,7 @@ function OrderForm({ initial, settings }: { initial: Form; settings: Settings })
           {form.items.map((i) => (
             <Card key={i.key}>
               <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
-                <Thumb image={i.piece.image} size={56} />
+                <Thumb image={i.piece.image} size={56} kind={i.piece.pieceType} />
                 <View style={{ flex: 1 }}>
                   <Text variant="caption" color={colors.accent}>
                     {pieceLabel(i.piece)}

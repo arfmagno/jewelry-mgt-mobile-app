@@ -12,9 +12,11 @@ import {
   type ImageStyle,
   type ViewStyle,
 } from "react-native";
+import type { PieceType } from "@jewelry/shared";
 import { useImageSource } from "@/hooks/useImageSource";
 import { MAX_CONTENT_WIDTH, TOUCH_TARGET, useLayout, useTheme } from "@/theme";
 import type { IconName } from "./Button";
+import { JewelryGlyph } from "./illustrations";
 import { Text } from "./Text";
 
 /** Scrollable page, centred with a readable max width on tablets. */
@@ -182,11 +184,24 @@ export function Badge({ label, tone = "neutral", icon }: { label: string; tone?:
   );
 }
 
-export function EmptyState({ icon, title, body, action }: { icon: IconName; title: string; body?: string; action?: ReactNode }) {
+export function EmptyState({
+  icon,
+  art,
+  title,
+  body,
+  action,
+}: {
+  icon: IconName;
+  /** Illustration shown instead of the icon. */
+  art?: ReactNode;
+  title: string;
+  body?: string;
+  action?: ReactNode;
+}) {
   const { colors } = useTheme();
   return (
     <View style={styles.empty}>
-      <Ionicons name={icon} size={40} color={colors.accent} accessibilityElementsHidden />
+      {art ?? <Ionicons name={icon} size={40} color={colors.accent} accessibilityElementsHidden />}
       <Text variant="heading" align="center">
         {title}
       </Text>
@@ -213,10 +228,13 @@ export function Thumb({
   image,
   size,
   label,
+  kind,
 }: {
   image: { localUri: string | null; storageKey: string | null } | null | undefined;
   size?: number;
   label?: string;
+  /** Drawn as the placeholder when there is no photo. */
+  kind?: PieceType | null;
 }) {
   const { colors, radius, reduceMotion } = useTheme();
   const uri = useImageSource(image);
@@ -230,7 +248,11 @@ export function Thumb({
         accessibilityLabel={label ? `${label}, no photo` : undefined}
         accessible={!!label}
       >
-        <Ionicons name="diamond-outline" size={size ? size / 2.5 : 36} color={colors.accent} />
+        {kind ? (
+          <JewelryGlyph type={kind} size={size ? size * 0.7 : 96} color={colors.accent} strokeWidth={size && size < 64 ? 3 : 2} />
+        ) : (
+          <Ionicons name="diamond-outline" size={size ? size / 2.5 : 36} color={colors.accent} />
+        )}
       </View>
     );
   }

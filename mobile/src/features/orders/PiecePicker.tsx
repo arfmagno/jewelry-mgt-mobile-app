@@ -59,7 +59,7 @@ export function PiecePicker({
                 backgroundColor: pressed ? colors.accentSoft : colors.surface,
               })}
             >
-              <Thumb image={item.image} size={56} />
+              <Thumb image={item.image} size={56} kind={item.pieceType} />
               <View style={{ flex: 1 }}>
                 <Text variant="caption" color={colors.accent}>
                   {pieceLabel(item)}

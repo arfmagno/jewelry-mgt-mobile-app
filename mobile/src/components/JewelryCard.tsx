@@ -26,7 +26,7 @@ export function JewelryCard({ item, onPress }: { item: JewelrySummary; onPress: 
         gap: 8,
       })}
     >
-      <Thumb image={item.image} />
+      <Thumb image={item.image} kind={item.pieceType} />
       <View style={{ gap: 4 }}>
         <Text variant="caption" color={colors.accent}>
           {pieceLabel(item)}
