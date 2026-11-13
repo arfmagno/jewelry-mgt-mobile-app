@@ -93,6 +93,7 @@ function Navigator() {
           <Stack.Screen name="jewelry/edit" options={{ title: "Piece", presentation: "modal" }} />
           <Stack.Screen name="orders/[id]" options={{ title: "Job order" }} />
           <Stack.Screen name="orders/edit" options={{ title: "Job order", presentation: "modal" }} />
+          <Stack.Screen name="orders/assistant" options={{ title: "Describe an order", presentation: "modal" }} />
           <Stack.Screen name="clients/[id]" options={{ title: "Client" }} />
           <Stack.Screen name="clients/edit" options={{ title: "Client", presentation: "modal" }} />
           <Stack.Screen name="suppliers/index" options={{ title: "Suppliers" }} />

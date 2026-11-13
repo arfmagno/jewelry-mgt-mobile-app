@@ -9,6 +9,7 @@ import type { IconName } from "./Button";
 import { Text } from "./Text";
 
 const ACTIONS: { label: string; hint: string; icon: IconName; href: Href; testID: string }[] = [
+  { label: "Describe an order", hint: "Say it in a sentence; I'll ask for the rest", icon: "chatbubble-ellipses-outline", href: "/orders/assistant", testID: "quick-add-assistant" },
   { label: "Piece", hint: "Something made or in stock", icon: "diamond-outline", href: "/jewelry/edit", testID: "quick-add-piece" },
   { label: "Order", hint: "A client's job order", icon: "receipt-outline", href: "/orders/edit", testID: "quick-add-order" },
   { label: "Client", hint: "Someone you sell to", icon: "person-add-outline", href: "/clients/edit", testID: "quick-add-client" },
@@ -62,7 +63,7 @@ export function QuickAddButton() {
               key={a.label}
               testID={a.testID}
               accessibilityRole="button"
-              accessibilityLabel={`New ${a.label.toLowerCase()}`}
+              accessibilityLabel={a.href === "/orders/assistant" ? a.label : `New ${a.label.toLowerCase()}`}
               accessibilityHint={a.hint}
               onPress={() => go(a.href)}
               style={({ pressed }) => [
