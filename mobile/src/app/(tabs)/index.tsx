@@ -13,6 +13,7 @@ import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { useTheme } from "@/theme";
 
 type ComponentType = (typeof COMPONENT_TYPES.values)[number];
+const PAGE = 60;
 
 export default function JewelryList() {
   const router = useRouter();
@@ -20,9 +21,10 @@ export default function JewelryList() {
   const [search, setSearch] = useState("");
   const [availability, setAvailability] = useState<Availability | null>("available");
   const [type, setType] = useState<ComponentType | null>(null);
+  const [limit, setLimit] = useState(PAGE);
   const { data, loading } = useLiveQuery(
-    (s) => listJewelry(s, { search, availability: availability ?? undefined, componentType: type ?? undefined, limit: 200 }),
-    [search, availability, type],
+    (s) => listJewelry(s, { search, availability: availability ?? undefined, componentType: type ?? undefined, limit }),
+    [search, availability, type, limit],
   );
   const filtered = Boolean(search || availability || type);
   const add = () => router.push("/jewelry/edit");
@@ -61,6 +63,9 @@ export default function JewelryList() {
         ) : (
           <Grid items={data ?? []} keyOf={(j) => j.id} render={(j) => <JewelryCard item={j} onPress={() => router.push(`/jewelry/${j.id}`)} />} />
         )}
+        {(data?.length ?? 0) >= limit ? (
+          <Button label="Show more pieces" icon="chevron-down" variant="secondary" onPress={() => setLimit((l) => l + PAGE)} />
+        ) : null}
       </Screen>
       <Fab testID="add-piece" label="New piece" onPress={add} />
     </View>
