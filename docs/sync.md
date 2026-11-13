@@ -36,9 +36,9 @@ Photo uploads run before each sync, so the new `storageKey` goes out in the same
 - When the app returns to the foreground
 - A few seconds after local edits (debounced)
 - Every five minutes while open
-- On demand, from the sync indicator in the header
+- On demand, with *Sync now* on the More tab
 
-The header indicator always pairs an icon with text: *Synced*, *3 to sync*, *Syncing*, *Offline · 3*, *Sync issue*.
+The More tab shows the connection, changes waiting to sync, the last sync time and any error. A sync error also puts a badge on the More tab.
 
 ## Server layout (DynamoDB single table)
 

@@ -1,24 +1,25 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
-import { SyncIndicator } from "@/components/SyncIndicator";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useApp } from "@/providers/app";
 import { useLayout, useTheme } from "@/theme";
 
 export default function TabsLayout() {
   const { colors, fonts } = useTheme();
   const { isTablet } = useLayout();
+  const { top } = useSafeAreaInsets();
+  const { syncStatus } = useApp();
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: colors.background },
-        headerTitleStyle: { fontFamily: fonts.display, color: colors.text, fontSize: 24 },
-        headerShadowVisible: false,
-        headerRight: () => <SyncIndicator />,
+        // The tab bar already says where you are; the space goes to the list.
+        headerShown: false,
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.divider, minHeight: 64 },
         tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: 12 },
         tabBarLabelPosition: isTablet ? "beside-icon" : "below-icon",
-        sceneStyle: { backgroundColor: colors.background },
+        sceneStyle: { backgroundColor: colors.background, paddingTop: top },
       }}
     >
       <Tabs.Screen
@@ -46,6 +47,10 @@ export default function TabsLayout() {
         name="more"
         options={{
           title: "More",
+          // Sync details live on More; flag a problem there.
+          tabBarBadge: syncStatus?.state === "error" ? "!" : undefined,
+          tabBarBadgeStyle: { backgroundColor: colors.warning, color: colors.background },
+          tabBarAccessibilityLabel: syncStatus?.state === "error" ? "More, sync issue" : undefined,
           tabBarIcon: ({ color, size }) => <Ionicons name="ellipsis-horizontal" color={String(color)} size={size} />,
         }}
       />

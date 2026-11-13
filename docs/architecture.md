@@ -42,7 +42,7 @@
 ```
 mobile/src
   app/            routes (Expo Router): (tabs) pieces · orders · clients · more, plus detail/edit stacks
-  components/     themed, accessible primitives: Text, Button, fields, layout, SyncIndicator
+  components/     themed, accessible primitives: Text, Button, fields, layout, ListToolbar
   features/       larger form sections: jewelry (parts, stones, costs, photos, AI), orders, materials
   hooks/          useLiveQuery, useSettings, useImageSource, picker options
   lib/            db adapter, auth, api, images, form helpers
