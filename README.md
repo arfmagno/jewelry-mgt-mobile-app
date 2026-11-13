@@ -26,6 +26,8 @@ It runs entirely on always-free cloud tiers and works without a connection. The 
   </tr>
 </table>
 
+<sub>Every client, piece and phone number shown is made up.</sub>
+
 | | |
 |---|---|
 | **App** | React Native (Expo SDK 58, Expo Router), TypeScript, SQLite on device |
@@ -49,13 +51,13 @@ It runs entirely on always-free cloud tiers and works without a connection. The 
 - **Suppliers, purchases and materials**: purchase history gives the latest price per material. Optional stock tracking counts purchases, adjustments, and usage in pieces.
 - **Trash**: deletes are reversible for 7 days. After that a record is removed, or archived if order history still refers to it.
 - **Reports**: monthly sales, cost, profit and collections.
-- **Settings**: light, dark or system appearance, inches or centimetres, US or ISO ring sizes, default markup, stock tracking, and sample data to explore the app.
+- **Settings**: light, dark or system appearance, inches or centimetres, US or ISO ring sizes, default markup, stock tracking.
 
 ## Repository layout
 
 ```
 packages/shared   Domain model: zod schemas for every table, option lists, money/units/phone helpers, API contract
-packages/core     Offline engine: SQLite store, outbox, lifecycle rules (trash/restore/purge), queries, sync engine
+packages/core     Offline engine: SQLite store, outbox, lifecycle rules (trash/restore/purge), queries, sync engine, order assistant
 backend           Lambda handler: sync push/pull, photo upload URLs, AI design generation, reading order messages
 infra             CDK stacks: app stack + GitHub OIDC deploy role, with free-tier guardrail tests
 mobile            Expo Router app (screens in mobile/src/app)
