@@ -2,12 +2,32 @@ appId: dev.atelier.jewelry
 name: piece-and-order
 ---
 - launchApp
-# Create an on-hand piece (default: one ring part, 18K yellow gold).
+# Create an on-hand ring, stepping through the editor (metal defaults to 18K yellow gold).
 - tapOn: "Pieces"
 - tapOn:
     id: "add-piece"
 - tapOn:
+    id: "type-ring"
+- tapOn:
+    id: "next-step" # metal
+- tapOn:
+    id: "next-step" # sizes
+- tapOn:
+    id: "next-step" # stones
+- tapOn:
+    id: "next-step" # costs
+- tapOn:
+    id: "add-cost-labor"
+- tapOn:
+    id: "cost-amount-0"
+- inputText: "1500"
+- hideKeyboard
+- tapOn:
+    id: "next-step" # finish: the description is suggested from the choices
+- assertVisible: "18K yellow gold ring"
+- tapOn:
     id: "piece-description"
+- eraseText: 40
 - inputText: "Solitaire engagement ring"
 - hideKeyboard
 - tapOn:
