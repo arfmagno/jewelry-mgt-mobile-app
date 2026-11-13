@@ -1,25 +1,39 @@
 import { getJewelry, getSettings, saveJewelry } from "@jewelry/core";
-import { ORIGINS, type Jewelry, type Settings } from "@jewelry/shared";
+import type { Jewelry, Settings } from "@jewelry/shared";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { AccessibilityInfo, View } from "react-native";
+import { AccessibilityInfo } from "react-native";
 import { Button } from "@/components/Button";
-import { ChoiceChips, DateField, optionsOf, SwitchRow, TextField } from "@/components/fields";
-import { Loading, Screen, Section } from "@/components/layout";
-import { Text } from "@/components/Text";
-import { CostsEditor } from "@/features/jewelry/CostsEditor";
-import { emptyComponent, emptyPiece, fromDetail, toDraft, validate, type FormErrors, type PieceForm } from "@/features/jewelry/form";
-import { MetalFields } from "@/features/jewelry/MetalFields";
-import { PartEditor } from "@/features/jewelry/PartsEditor";
-import { discardFiles, PhotosEditor } from "@/features/jewelry/PhotosEditor";
+import { Loading, Screen } from "@/components/layout";
+import { StepIndicator } from "@/components/tiles";
+import {
+  emptyPiece,
+  errorsForStep,
+  fromDetail,
+  stepOfError,
+  STEPS,
+  suggestDescription,
+  toDraft,
+  validate,
+  type FormErrors,
+  type PieceForm,
+} from "@/features/jewelry/form";
+import { discardFiles } from "@/features/jewelry/PhotosEditor";
+import type { StepProps } from "@/features/jewelry/steps/common";
+import { CostsStep } from "@/features/jewelry/steps/CostsStep";
+import { DetailsStep } from "@/features/jewelry/steps/DetailsStep";
+import { FinishStep } from "@/features/jewelry/steps/FinishStep";
+import { MetalStep } from "@/features/jewelry/steps/MetalStep";
+import { StonesStep } from "@/features/jewelry/steps/StonesStep";
+import { TypeStep } from "@/features/jewelry/steps/TypeStep";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
-import { useMaterials } from "@/hooks/useOptions";
 import { reportError } from "@/lib/forms";
 import { selection } from "@/lib/selection";
 import { useStore } from "@/providers/app";
-import { useTheme } from "@/theme";
 
 type Params = { id?: string; origin?: Jewelry["origin"]; channel?: string };
+
+const LAST = STEPS.length - 1;
 
 export default function JewelryEditScreen() {
   const { id, origin, channel } = useLocalSearchParams<Params>();
@@ -43,10 +57,11 @@ export default function JewelryEditScreen() {
 function Editor({ initial, settings, channel }: { initial: PieceForm; settings: Settings; channel?: string }) {
   const store = useStore();
   const router = useRouter();
-  const { colors } = useTheme();
-  const materials = useMaterials(settings.materialTracking);
+  const editing = Boolean(initial.id);
   const [form, setForm] = useState(initial);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [step, setStep] = useState(0);
+  const [reached, setReached] = useState(editing ? LAST : 0);
   const [saving, setSaving] = useState(false);
   const created = useRef<string[]>([]);
   const saved = useRef(false);
@@ -61,11 +76,31 @@ function Editor({ initial, settings, channel }: { initial: PieceForm; settings: 
 
   const set = (patch: Partial<PieceForm>) => setForm((f) => ({ ...f, ...patch }));
 
+  const open = (next: number) => {
+    if (next === LAST && !form.description.trim()) set({ description: suggestDescription(form) });
+    setStep(next);
+    setReached((r) => Math.max(r, next));
+    AccessibilityInfo.announceForAccessibility(`Step ${next + 1} of ${STEPS.length}, ${STEPS[next]!.label}`);
+  };
+
+  const announceProblems = (count: number) =>
+    AccessibilityInfo.announceForAccessibility(`${count} ${count === 1 ? "field needs" : "fields need"} attention`);
+
+  const next = () => {
+    const stepErrors = errorsForStep(validate(form), step);
+    setErrors(stepErrors);
+    if (Object.keys(stepErrors).length) return announceProblems(Object.keys(stepErrors).length);
+    open(step + 1);
+  };
+
   const save = async () => {
-    const e = validate(form);
-    setErrors(e);
-    if (Object.keys(e).length) {
-      AccessibilityInfo.announceForAccessibility(`${Object.keys(e).length} fields need attention`);
+    const all = validate(form);
+    setErrors(all);
+    const paths = Object.keys(all);
+    if (paths.length) {
+      const first = Math.min(...paths.map(stepOfError));
+      if (first !== step) open(first);
+      announceProblems(paths.length);
       return;
     }
     setSaving(true);
@@ -80,90 +115,45 @@ function Editor({ initial, settings, channel }: { initial: PieceForm; settings: 
     }
   };
 
+  const props: StepProps = { form, set, errors, settings, goTo: open };
+  const key = STEPS[step]!.key;
+
   return (
     <>
-      <Stack.Screen options={{ title: form.id ? "Edit piece" : "New piece" }} />
+      <Stack.Screen
+        options={{
+          title: editing ? "Edit piece" : "New piece",
+          headerRight:
+            editing && step !== LAST
+              ? () => <Button testID="save-piece-header" label="Save" variant="ghost" onPress={save} busy={saving} />
+              : undefined,
+        }}
+      />
       <Screen
+        key={key}
         testID="jewelry-form"
         footer={
           <>
-            <Button label="Cancel" variant="ghost" onPress={() => router.back()} style={{ flex: 1 }} />
-            <Button testID="save-piece" label="Save piece" icon="checkmark" onPress={save} busy={saving} style={{ flex: 2 }} />
+            {step > 0 ? (
+              <Button label="Back" icon="arrow-back" variant="ghost" onPress={() => open(step - 1)} style={{ flex: 1 }} />
+            ) : (
+              <Button label="Cancel" variant="ghost" onPress={() => router.back()} style={{ flex: 1 }} />
+            )}
+            {step < LAST ? (
+              <Button testID="next-step" label="Continue" icon="arrow-forward" onPress={next} style={{ flex: 2 }} />
+            ) : (
+              <Button testID="save-piece" label="Save piece" icon="checkmark" onPress={save} busy={saving} style={{ flex: 2 }} />
+            )}
           </>
         }
       >
-        <Section title="Piece">
-          <TextField
-            testID="piece-description"
-            label="Description"
-            required
-            value={form.description}
-            onChangeText={(description) => set({ description })}
-            multiline
-            maxLength={1000}
-            error={errors.description}
-          />
-          <ChoiceChips
-            label="Stock type"
-            hint="On-hand pieces are made for stock; made-to-order pieces are made for a specific order."
-            options={optionsOf(ORIGINS)}
-            value={form.origin}
-            onChange={(o) => o && set({ origin: o })}
-          />
-          <DateField label="Manufacture date" value={form.manufactureDate} onChange={(manufactureDate) => set({ manufactureDate })} allowClear />
-        </Section>
-
-        <Section title="Photos & designs">
-          <PhotosEditor
-            images={form.images}
-            description={form.description}
-            onChange={(images) => set({ images })}
-            onFileCreated={(uri) => created.current.push(uri)}
-          />
-        </Section>
-
-        <Section title="Metal">
-          <SwitchRow
-            label="Same metal for all parts"
-            hint="Turn off for two-tone or mixed-metal sets"
-            value={form.sameMetalForAll}
-            onChange={(sameMetalForAll) => set({ sameMetalForAll })}
-          />
-          {form.sameMetalForAll ? <MetalFields value={form} onChange={set} errors={errors} weightLabel="Total metal weight" /> : (
-            <Text muted>Set the metal on each part below.</Text>
-          )}
-        </Section>
-
-        <Section title="Parts">
-          {errors.components ? <Text color={colors.danger}>{errors.components}</Text> : null}
-          {form.components.map((c, i) => (
-            <PartEditor
-              key={c.key}
-              index={i}
-              part={c}
-              ownMetal={!form.sameMetalForAll}
-              units={settings}
-              errors={errors}
-              onChange={(patch) => set({ components: form.components.map((x) => (x.key === c.key ? { ...x, ...patch } : x)) })}
-              onRemove={form.components.length > 1 ? () => set({ components: form.components.filter((x) => x.key !== c.key) }) : null}
-            />
-          ))}
-          <Button
-            label="Add part"
-            hint="For sets, add each item: ring, earrings, pendant, chain…"
-            icon="add"
-            variant="secondary"
-            onPress={() => set({ components: [...form.components, emptyComponent("earrings")] })}
-          />
-        </Section>
-
-        <Section title="Costs">
-          <CostsEditor costs={form.costs} materials={materials} errors={errors} onChange={(costs) => set({ costs })} />
-        </Section>
-
-        <View>
-          <TextField label="Notes" value={form.notes} onChangeText={(notes) => set({ notes })} multiline maxLength={2000} />
-        </View>
+        <StepIndicator steps={[...STEPS]} current={step} canOpen={(i) => i <= reached} onOpen={open} />
+        {key === "type" ? <TypeStep {...props} /> : null}
+        {key === "metal" ? <MetalStep {...props} /> : null}
+        {key === "details" ? <DetailsStep {...props} /> : null}
+        {key === "stones" ? <StonesStep {...props} /> : null}
+        {key === "costs" ? <CostsStep {...props} /> : null}
+        {key === "finish" ? <FinishStep {...props} onFileCreated={(uri) => created.current.push(uri)} /> : null}
       </Screen>
     </>
   );
