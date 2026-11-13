@@ -2,27 +2,29 @@
 
 ## Look
 
-The palette follows the system appearance setting:
+The palette follows the phone's appearance by default; Settings can fix it to Ivory (light) or Noir (dark) on this device.
 
-| Token | Noir & Gold (dark) | Ivory & Gold (light) |
+| Token | Noir & Champagne (dark) | Ivory & Gold (light) |
 |---|---|---|
-| background | `#0E0D0B` | `#F7F3EA` |
-| surface | `#181612` | `#FFFDF8` |
-| text | `#F4EFE4` | `#1C1A16` |
-| text muted | `#A39E93` | `#5E584D` |
-| accent (gold) | `#D4AF37` | `#7A5C14` |
-| on accent | `#0E0D0B` | `#FFFDF8` |
-| border (inputs) | `#6E6455` | `#8C8577` |
+| background | `#141210` | `#FAF8F3` |
+| surface | `#1C1A17` | `#FFFFFF` |
+| text | `#F2EDE4` | `#17150F` |
+| text muted | `#A8A196` | `#5F594E` |
+| accent (gold type) | `#CDB27A` | `#80631B` |
+| on accent | `#141210` | `#FFFFFF` |
+| ink (primary fills) | `#CDB27A` | `#17150F` |
+| gold (hairlines) | `#8C7748` | `#B8933A` |
+| border (inputs) | `#776E61` | `#8C8577` |
 | danger | `#F28B82` | `#B3261E` |
 
-The light theme uses a deeper antique gold, because bright gold on ivory fails contrast.
+The dark theme is a warm espresso rather than pure black, with a soft champagne gold; its primary buttons and the add button are champagne with dark type. The light theme uses a deeper antique gold for type, because bright gold on ivory fails contrast.
 
 - **Type**: Cormorant Garamond for headings, piece names, client names and prices (lining figures, so "18K" never reads "ı8K"). Inter for body text and fields. Codes, statuses and list headings are small spaced capitals.
 - **Flat and restrained**: no gradients or shadows. Primary buttons are solid ink with small spaced capitals; secondary buttons are an ink outline. Corners are nearly square.
-- **Gold** is kept to type and fine lines: codes, section labels, hairlines around thumbnails and monograms. The add button in the tab bar is a black disc with a fine gold cross.
+- **Gold** is kept to type and fine lines: codes, section labels, hairlines around thumbnails and monograms. The add button in the tab bar is an ink disc with a fine cross; it opens a menu sheet of the records you can add.
 - **Pieces without photos** sit on a softly lit, display-case backdrop with a line drawing of the piece.
 - **Quiet chrome**: pieces are shown like a catalogue (picture, then name and price, no box). Orders, clients and other lists are open rows divided by hairlines, like a ledger. Detail pages are spec sheets: label on the left, value on the right. A status is a small dot and a word. Screen headers are small capitals; the page carries the large title.
-- **Spacing**: 4 / 8 / 12 / 16 / 24 / 32. Radii are 6 / 10 / 16.
+- **Spacing**: 4 / 8 / 12 / 16 / 24 / 32. Radii are 2 / 4 / 6, so chips, tiles and buttons read as nearly square. Selected chips and tiles are filled or outlined in ink with a check.
 - **Illustrations**: line drawings of each jewelry type, stone cut, and polished-metal swatches (`components/illustrations.tsx`) drive the pickers. They are decorative; every one sits next to its name in text.
 - **Guided entry**: adding a piece is split into short steps (type, metal, sizes, stones, costs, finish) with a progress bar, and the running cost is always visible on the costs step.
 
