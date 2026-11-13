@@ -13,7 +13,7 @@ import { MetalFields } from "@/features/jewelry/MetalFields";
 import { PartEditor } from "@/features/jewelry/PartsEditor";
 import { discardFiles, PhotosEditor } from "@/features/jewelry/PhotosEditor";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
-import { useMaterials, useSupplierOptions } from "@/hooks/useOptions";
+import { useMaterials } from "@/hooks/useOptions";
 import { reportError } from "@/lib/forms";
 import { selection } from "@/lib/selection";
 import { useStore } from "@/providers/app";
@@ -44,7 +44,6 @@ function Editor({ initial, settings, channel }: { initial: PieceForm; settings: 
   const store = useStore();
   const router = useRouter();
   const { colors } = useTheme();
-  const suppliers = useSupplierOptions();
   const materials = useMaterials(settings.materialTracking);
   const [form, setForm] = useState(initial);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -144,7 +143,6 @@ function Editor({ initial, settings, channel }: { initial: PieceForm; settings: 
               part={c}
               ownMetal={!form.sameMetalForAll}
               units={settings}
-              suppliers={suppliers}
               errors={errors}
               onChange={(patch) => set({ components: form.components.map((x) => (x.key === c.key ? { ...x, ...patch } : x)) })}
               onRemove={form.components.length > 1 ? () => set({ components: form.components.filter((x) => x.key !== c.key) }) : null}
@@ -160,7 +158,7 @@ function Editor({ initial, settings, channel }: { initial: PieceForm; settings: 
         </Section>
 
         <Section title="Costs">
-          <CostsEditor costs={form.costs} suppliers={suppliers} materials={materials} errors={errors} onChange={(costs) => set({ costs })} />
+          <CostsEditor costs={form.costs} materials={materials} errors={errors} onChange={(costs) => set({ costs })} />
         </Section>
 
         <View>

@@ -10,9 +10,10 @@ import {
 } from "@jewelry/shared";
 import { View } from "react-native";
 import { Button, IconButton } from "@/components/Button";
-import { ChoiceChips, MoneyField, NumberField, optionsOf, SelectField, TextField, type Option } from "@/components/fields";
+import { ChoiceChips, MoneyField, NumberField, optionsOf, SelectField, TextField } from "@/components/fields";
 import { Card, Columns } from "@/components/layout";
 import { Text } from "@/components/Text";
+import { SupplierField } from "@/features/suppliers/SupplierField";
 import { useTheme } from "@/theme";
 import { emptyStone, FIELDS_BY_TYPE, type ComponentForm, type FormErrors, type StoneForm } from "./form";
 import { MetalFields } from "./MetalFields";
@@ -23,13 +24,12 @@ type Props = {
   part: ComponentForm;
   ownMetal: boolean;
   units: Pick<Settings, "lengthUnit" | "ringSizeSystem">;
-  suppliers: Option<string>[];
   errors: FormErrors;
   onChange: (patch: Partial<ComponentForm>) => void;
   onRemove: (() => void) | null;
 };
 
-export function PartEditor({ index, part, ownMetal, units, suppliers, errors, onChange, onRemove }: Props) {
+export function PartEditor({ index, part, ownMetal, units, errors, onChange, onRemove }: Props) {
   const applies = FIELDS_BY_TYPE[part.type];
   const p = `components.${index}.`;
   const updateStone = (key: string, patch: Partial<StoneForm>) =>
@@ -84,7 +84,6 @@ export function PartEditor({ index, part, ownMetal, units, suppliers, errors, on
             key={s.key}
             stone={s}
             number={k + 1}
-            suppliers={suppliers}
             errors={errors}
             errorPrefix={`${p}stones.${k}.`}
             onChange={(patch) => updateStone(s.key, patch)}
@@ -102,7 +101,6 @@ export function PartEditor({ index, part, ownMetal, units, suppliers, errors, on
 function StoneEditor({
   stone,
   number,
-  suppliers,
   errors,
   errorPrefix,
   onChange,
@@ -110,7 +108,6 @@ function StoneEditor({
 }: {
   stone: StoneForm;
   number: number;
-  suppliers: Option<string>[];
   errors: FormErrors;
   errorPrefix: string;
   onChange: (patch: Partial<StoneForm>) => void;
@@ -144,7 +141,7 @@ function StoneEditor({
       <MoneyField label="Price per stone" value={stone.unitCost} onChangeText={(unitCost) => onChange({ unitCost })} error={errors[`${errorPrefix}unitCost`]} />
       <Columns>
         <SelectField label="Setting" options={optionsOf(STONE_SETTINGS)} value={stone.setting} allowClear onChange={(setting) => onChange({ setting })} />
-        <SelectField label="Supplier" options={suppliers} value={stone.supplierId} allowClear onChange={(supplierId) => onChange({ supplierId })} />
+        <SupplierField value={stone.supplierId} onChange={(supplierId) => onChange({ supplierId })} />
       </Columns>
     </View>
   );

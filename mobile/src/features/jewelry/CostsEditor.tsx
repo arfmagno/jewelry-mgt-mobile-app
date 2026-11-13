@@ -2,23 +2,23 @@ import { latestPrice, type MaterialWithStock } from "@jewelry/core";
 import { COST_CATEGORIES, formatMoney, isServiceCost, lineTotal, moneyToInput, parseMoney, UNITS } from "@jewelry/shared";
 import { View } from "react-native";
 import { Button, IconButton } from "@/components/Button";
-import { MoneyField, NumberField, optionsOf, SelectField, TextField, type Option } from "@/components/fields";
+import { MoneyField, NumberField, optionsOf, SelectField, TextField } from "@/components/fields";
 import { Card, Columns } from "@/components/layout";
 import { Text } from "@/components/Text";
 import { parseNumber } from "@/lib/forms";
+import { SupplierField } from "@/features/suppliers/SupplierField";
 import { useStore } from "@/providers/app";
 import { emptyCost, type CostForm, type FormErrors } from "./form";
 
 type Props = {
   costs: CostForm[];
-  suppliers: Option<string>[];
   materials: MaterialWithStock[] | null;
   errors: FormErrors;
   onChange: (costs: CostForm[]) => void;
 };
 
 /** Cost lines: metal and other materials (from suppliers) and flat-fee work. */
-export function CostsEditor({ costs, suppliers, materials, errors, onChange }: Props) {
+export function CostsEditor({ costs, materials, errors, onChange }: Props) {
   const store = useStore();
   const update = (key: string, patch: Partial<CostForm>) => onChange(costs.map((c) => (c.key === key ? { ...c, ...patch } : c)));
 
@@ -57,7 +57,7 @@ export function CostsEditor({ costs, suppliers, materials, errors, onChange }: P
             <TextField label="Description" placeholder={service ? "e.g. Rhodium plating" : "e.g. 18K casting grain"} value={c.description} onChangeText={(description) => update(c.key, { description })} maxLength={200} />
             {service ? null : (
               <Columns>
-                <SelectField label="Supplier" options={suppliers} value={c.supplierId} allowClear onChange={(supplierId) => update(c.key, { supplierId })} />
+                <SupplierField value={c.supplierId} onChange={(supplierId) => update(c.key, { supplierId })} />
                 {materials ? (
                   <SelectField
                     label="From stock"
