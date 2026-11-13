@@ -1,15 +1,17 @@
 import { clearSampleData, hasSampleData, saveSettings, seedSampleData } from "@jewelry/core";
 import { LENGTH_UNITS, RING_SIZE_SYSTEMS } from "@jewelry/shared";
 import { useState } from "react";
-import { Alert } from "react-native";
+import { Alert, View } from "react-native";
 import { Button } from "@/components/Button";
 import { ChoiceChips, NumberField, optionsOf, SwitchRow } from "@/components/fields";
 import { Card, Screen, Section } from "@/components/layout";
 import { Text } from "@/components/Text";
+import { TilePicker } from "@/components/tiles";
 import { useLiveQuery } from "@/hooks/useLiveQuery";
 import { useSettings } from "@/hooks/useSettings";
 import { reportError } from "@/lib/forms";
 import { useApp } from "@/providers/app";
+import { dark, light, useTheme, type AppearancePreference } from "@/theme";
 
 export default function SettingsScreen() {
   const { store, authState } = useApp();
@@ -33,6 +35,7 @@ export default function SettingsScreen() {
 
   return (
     <Screen testID="settings">
+      <AppearanceSection />
       <Section title="Units">
         <Text variant="caption" muted>
           Measurements are stored in millimetres and shown in the units you choose.
@@ -103,6 +106,42 @@ function SampleData() {
       ) : (
         <Button testID="load-sample-data" label="Load sample data" icon="sparkles-outline" busy={busy} onPress={() => run(() => seedSampleData(store))} />
       )}
+    </Section>
+  );
+}
+
+/** A small preview of a palette: page, a line of text and a black or gold button. */
+function Swatch({ palette, half }: { palette: typeof light; half?: typeof light }) {
+  const panel = (p: typeof light, flex = 1) => (
+    <View style={{ flex, backgroundColor: p.background, padding: 8, gap: 5, justifyContent: "center" }}>
+      <View style={{ height: 3, width: "70%", backgroundColor: p.text }} />
+      <View style={{ height: 3, width: "45%", backgroundColor: p.textMuted }} />
+      <View style={{ height: 8, width: "55%", marginTop: 4, backgroundColor: p.ink }} />
+    </View>
+  );
+  return (
+    <View style={{ width: 72, height: 54, flexDirection: "row", borderWidth: 1, borderColor: palette.gold, overflow: "hidden" }}>
+      {panel(palette)}
+      {half ? panel(half) : null}
+    </View>
+  );
+}
+
+function AppearanceSection() {
+  const { appearance, setAppearance } = useTheme();
+  return (
+    <Section title="Appearance">
+      <TilePicker<AppearancePreference>
+        label="Theme"
+        testIDPrefix="appearance"
+        value={appearance}
+        onChange={(v) => v && setAppearance(v)}
+        tiles={[
+          { value: "system", label: "System", caption: "Follow the phone", art: () => <Swatch palette={light} half={dark} /> },
+          { value: "light", label: "Ivory", caption: "Light", art: () => <Swatch palette={light} /> },
+          { value: "dark", label: "Noir", caption: "Dark", art: () => <Swatch palette={dark} /> },
+        ]}
+      />
     </Section>
   );
 }

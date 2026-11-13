@@ -1,11 +1,17 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { AccessibilityInfo, useColorScheme, useWindowDimensions } from "react-native";
+import { AccessibilityInfo, Appearance, useColorScheme, useWindowDimensions } from "react-native";
+import { loadAppearance, saveAppearance, type AppearancePreference } from "@/lib/preferences";
 import { breakpoints, dark, fonts, light, radius, space, type Palette } from "./tokens";
 
 export * from "./tokens";
 
+export type { AppearancePreference };
+
 export type Theme = {
   scheme: "light" | "dark";
+  /** What the person chose in Settings: follow the phone, or always light or dark. */
+  appearance: AppearancePreference;
+  setAppearance: (value: AppearancePreference) => void;
   colors: Palette;
   fonts: typeof fonts;
   space: typeof space;
@@ -16,7 +22,14 @@ export type Theme = {
 const ThemeContext = createContext<Theme | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const scheme = useColorScheme() === "light" ? "light" : "dark";
+  const [appearance, setAppearanceState] = useState<AppearancePreference>(loadAppearance);
+  const system = useColorScheme();
+  const scheme = appearance === "system" ? (system === "light" ? "light" : "dark") : appearance;
+
+  // Tell the platform too, so alerts, pickers and the keyboard match.
+  useEffect(() => {
+    Appearance.setColorScheme?.(appearance === "system" ? "auto" : appearance);
+  }, [appearance]);
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
@@ -26,8 +39,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const theme = useMemo<Theme>(
-    () => ({ scheme, colors: scheme === "dark" ? dark : light, fonts, space, radius, reduceMotion }),
-    [scheme, reduceMotion],
+    () => ({
+      scheme,
+      appearance,
+      setAppearance: (value: AppearancePreference) => {
+        saveAppearance(value);
+        setAppearanceState(value);
+      },
+      colors: scheme === "dark" ? dark : light,
+      fonts,
+      space,
+      radius,
+      reduceMotion,
+    }),
+    [scheme, appearance, reduceMotion],
   );
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
 }
