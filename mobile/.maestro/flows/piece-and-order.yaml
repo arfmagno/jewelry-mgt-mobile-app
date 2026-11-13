@@ -76,7 +76,9 @@ name: piece-and-order
     id: "save-payment"
 - assertVisible: "Fully paid"
 
-# The piece now shows as part of an order.
+# The list shows available pieces by default, so the sold piece moves to "In an order".
 - back
 - tapOn: "Pieces"
-- assertVisible: "In an order"
+- assertNotVisible: "Solitaire engagement ring"
+- tapOn: "In an order"
+- assertVisible: "Solitaire engagement ring"

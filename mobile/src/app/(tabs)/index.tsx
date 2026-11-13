@@ -18,7 +18,7 @@ export default function JewelryList() {
   const router = useRouter();
   const { colors } = useTheme();
   const [search, setSearch] = useState("");
-  const [availability, setAvailability] = useState<Availability | null>(null);
+  const [availability, setAvailability] = useState<Availability | null>("available");
   const [type, setType] = useState<ComponentType | null>(null);
   const { data, loading } = useLiveQuery(
     (s) => listJewelry(s, { search, availability: availability ?? undefined, componentType: type ?? undefined, limit: 200 }),
