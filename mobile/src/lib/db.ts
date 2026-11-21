@@ -19,7 +19,16 @@ export function sqliteAdapter(db: SQLiteDatabase): SqlDb {
 const newId = createUlid((n) => Crypto.getRandomValues(new Uint8Array(n)));
 
 export async function openStore(name = "jewelry.db"): Promise<Store> {
-  const db = await openDatabaseAsync(name);
+  let db: SQLiteDatabase;
+  try {
+    db = await openDatabaseAsync(name);
+  } catch (error) {
+    // In the web demo the database file can be locked by another tab or frame
+    // running the demo. A demo should still open, so it falls back to a fresh
+    // in-memory copy with the sample records. The real app never does this.
+    if (!config.demo) throw error;
+    db = await openDatabaseAsync(":memory:");
+  }
   await db.execAsync("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = OFF;");
   const sql = sqliteAdapter(db);
   await migrate(sql);
